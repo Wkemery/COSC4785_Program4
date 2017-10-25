@@ -101,63 +101,49 @@ input:  %empty
 
 exp: IDENTIFIER IDENTIFIER SEMICO {
             $$ = new VarDec($1->value, $2->value);
-            delete $1;
-            delete $2;
-            delete $3;
+            delete $1, $2, $3;
 }
       | IDENTIFIER error SEMICO {
-            $$ = 0;
+            $$ = new ErrNode();
             cerr << "-> before ; at " << $3->line << ":" << $3->column << endl 
             << endl;
             yyerrok;
-            delete $1;
-            delete $3;
+            delete $1, $3;
           }
       | IDENTIFIER multibracks IDENTIFIER SEMICO {
             $$ = new VarDec($1->value, $3->value, $2);
-            delete $1;
-            delete $3;
-            delete $4;
+            delete $1, $3, $4;
       }
       | simpletype IDENTIFIER SEMICO {
             $$ = new VarDec("int", $2->value);
-            delete $2;
-            delete $3;
-            delete $1;
+            delete $2, $3, $1;
       }
       | simpletype error SEMICO {
-        $$ = 0;
+        $$ = new ErrNode();
         cerr << " -> before ; at " << $3->line << ":" << $3->column << endl << endl;
         yyerrok;
-        delete $3;
-        delete $1;
+        delete $1, $3;
       }
       | simpletype multibracks IDENTIFIER SEMICO {
             $$ = new VarDec("int", $3->value, $2);
-            delete $3;
-            delete $4;
-            delete $1;
+            delete $1, $3, $4;
       }
       | expression %prec EXP { $$ = $1; }
 
       | IDENTIFIER IDENTIFIER error {
-                                  $$ = new VarDec($1->value, $2->value);
-                                  $$->setErr();
+                                  $$ = new ErrNode();
                                   cerr << "Expected Semicolon At "<< $2->line 
                                   << ":" << $2->column+$2->value.length() 
                                   << endl << endl;
                                   yyerrok;
-                                  delete $1;
-                                  delete $2; 
+                                  delete $1, $2;
 }
       | simpletype IDENTIFIER error {
-                            $$ = new VarDec("int", $2->value);
-                            $$->setErr();
+                            $$ = new ErrNode();
                               cerr << "Expected Semicolon At "<< $2->line << ":" 
                               << $2->column+$2->value.length() <<endl << endl;
                               yyerrok;
-                            delete $2;
-                            delete $1;
+                            delete $1, $2;
                                 }
 
 ;
@@ -177,23 +163,21 @@ expression: NUM {
                 delete $3;
             }
             | READ LPAREN error  {
-                      $$ = new Expression("read", EXPREAD); 
-                      $$->setErr();
+                      $$ = new ErrNode();
                       cerr << "Expected Right Parenthesis At "<< $2->line << ":" 
                       << $2->column <<endl << endl;
                       yyerrok;
-                      delete $1;
-                      delete $2;
+                      delete $1, $2;
                      }
             | unaryop expression %prec NEG { 
                     $$ = new Expression($1, $2, EXPUNARY); 
                     if($1->getErr()) $$->setErr();
                     if($2->getErr()) $$->setErr();}
             | unaryop error %prec NEG { 
-                      $$ = new Expression($1, 0, EXPUNARY); 
-                      $$->setErr();
+                      $$ = new ErrNode();
                       cerr << "Expected expression after " << yylval.token->line 
                       << ":" << yylval.token->column << endl << endl;
+                      delete $1;
                       yyerrok;
             }
             | expression relationop expression %prec RE{ 
@@ -202,10 +186,10 @@ expression: NUM {
                     if($2->getErr()) $$->setErr();
                     if($3->getErr()) $$->setErr();}
             | expression relationop error %prec RE{ 
-                      $$ = new Expression($1, $2, 0, EXPRELATION);
-                      $$->setErr();
+                      $$ = new ErrNode();
                       cerr << "Expected expression after " << yylval.token->line 
                       << ":" << yylval.token->column << endl << endl;
+                      delete $1, 
                       yyerrok;
             }
             | expression productop expression %prec PRO{
@@ -228,8 +212,7 @@ expression: NUM {
                     if($3->getErr()) $$->setErr();
             }
             | expression sumop error %prec RE{ 
-              $$ = new Expression($1, $2, 0, EXPSUMOP);
-              $$->setErr();
+              $$ = new ErrNode();
               cerr << "Expected expression after " << yylval.token->line 
               << ":" << yylval.token->column << endl << endl;
               yyerrok;
@@ -241,8 +224,7 @@ expression: NUM {
                   delete $3;
             }
             | LPAREN expression error { 
-                    $$ = new Expression($2, EXPPAREN);
-                    $$->setErr();
+                    $$ = new ErrNode();
                     cerr << "Expected Right Parenthesis At "
                     << yylval.token->line << ":" << yylval.token->column 
                     <<endl << endl;
@@ -267,8 +249,7 @@ expression: NUM {
                   delete $4;
             }
             | name LPAREN arglist error {
-                    $$ = new Expression($1, $3, EXPNAMEARG);
-                    $$->setErr();
+                    $$ = new ErrNode();
                     cerr << "Expected Right Parenthesis At "
                     << yylval.token->line << ":" << yylval.token->column 
                     <<endl << endl;
@@ -306,96 +287,77 @@ name: THIS {
         delete $4;
       }
       | IDENTIFIER LBRACK expression error{
-        $$ = new Name($3, $1->value, NAMEIDEXP);
-        $$->setErr();
+        $$ = new ErrNode();
         cerr << "Expected Right Bracket At " << yylval.token->line << ":" 
         << yylval.token->column << endl << endl;
-        delete $2;
-        delete $1;
+        delete $1, $2;
       }
       | name LBRACK expression error { 
-            $$ = new Name($1, $3, NAMEIDEXP);
-            $$->setErr();
+            $$ = new ErrNode();
             cerr<< "Expected Right Bracket At " << yylval.token->line << ":"
             << yylval.token->column << endl << endl;
             yyerrok;
-            delete $1;
-            delete $2;
+            delete $1, $2;
       }
 ;
 newexpression: NEW IDENTIFIER LPAREN arglist RPAREN {
                     $$ = new NewExpression($2->value, $4, NEWEXPARG);
-                    delete $2;
-                    delete $1;
-                    delete $3;
-                    delete $5;
+                    delete $1, $2, $3,$5;
 }
               | NEW IDENTIFIER LPAREN arglist error {
-                $$ = new NewExpression($2->value, $4, NEWEXPARG);
-                $$->setErr();
+                $$ = new ErrNode();
                 cerr << "Expected Right Parenthesis At " << yylval.token->line 
                 << ":" << yylval.token->column << endl << endl;
                       yyerrok;
-                      delete $2;
-                      delete $1;
-                      delete $3;
+                      delete $1, $2, $3, $4;
               }
               | NEW IDENTIFIER optExprBrack {
                 if($3 != 0) ((BrackExpression*)$3)->reverse();
                 if($3 == 0) $$ = new NewExpression($2->value, $3, 0, NEWEXP);
                 else $$ = new NewExpression($2->value, $3, 0, NEWEXPBRACK);
-                delete $2;
-                delete $1;
+                delete $1, $2;
               }
               | NEW IDENTIFIER optExprBrack multibracks {
                 if($3 != 0) ((BrackExpression*)$3)->reverse();
                 if($3 == 0) $$ = new NewExpression($2->value, $3, $4, NEWEXPMULTI);
                 else $$ = new NewExpression($2->value, $3, $4, NEWEXPBRACKMULTI);
-                delete $2;
-                delete $1;
+                delete $1, $2;
               }
               | NEW simpletype LPAREN arglist RPAREN {
                     $$ = new NewExpression("int", $4, NEWEXPARG);
-                    delete $1;
-                    delete $2;
-                    delete $3;
-                    delete $5;
+                    delete $1, $2, $3, $5;
               }
               | NEW simpletype LPAREN arglist error {
-                $$ = new NewExpression("int", $4, NEWEXPARG);
-                $$->setErr();
+                $$ = new ErrNode();
                 cerr << "Expected Right Parenthesis At " << yylval.token->line 
                 << ":" << yylval.token->column <<endl << endl;
                       yyerrok;
-                      delete $1;
-                      delete $2;
-                      delete $3;
+                      delete $1, $2, $3, $4; 
               }
               | NEW simpletype optExprBrack {
                     if($3 != 0) ((BrackExpression*)$3)->reverse();
                     if($3 == 0) $$ =  new NewExpression("int", $3, 0,NEWEXP);
                     else $$=  new NewExpression("int", $3, 0,NEWEXPBRACK);
-                    delete $1;
-                    delete $2;
+                    delete $1, $2;
               }
               | NEW simpletype optExprBrack multibracks {
                 if($3 != 0) ((BrackExpression*)$3)->reverse();
                 if($3 == 0) $$=  new NewExpression("int", $3, $4, NEWEXPMULTI);
                 else $$ =  new NewExpression("int", $3, $4, NEWEXPBRACKMULTI);
-                delete $1;
-                delete $2;
+                delete $1, $2;
               }
-             | NEW error{ $$ = 0;
+             | NEW error{ $$ = new ErrNode();
                   cerr << " -> after new at " << $1->line << ":" << $1->column 
                   << endl << endl; 
-                  yyerrok;}
+                  yyerrok;
+                  delete $1;
+}
                   
 ;
 optExprBrack: %empty %prec OPTEXP{$$ = 0;}
               | optExprBrack LBRACK expression RBRACK %prec OPTEXP{
                     $$ = new BrackExpression($3, $1);
-                    delete $2;
-                    delete $4;
+                    delete $2, $4;
               }
 ;
 

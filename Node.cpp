@@ -24,10 +24,10 @@ Node::~Node()
 }
 void Node::setErr() {
   _err = true;
-  for(unsigned int i = 0; i < _subNodes.size(); i++)
-  {
-    _subNodes[i]->setErr();
-  }
+  //for(unsigned int i = 0; i < _subNodes.size(); i++)
+  //{
+  //  _subNodes[i]->setErr();
+  //}
 }
 bool Node::getErr() {return _err;}
 string Node::getType(void) const
@@ -42,7 +42,6 @@ UnaryOp::UnaryOp(string value):Node(value, "UnaryOp")
 {}
 void UnaryOp::print(ostream* out)
 {
-  if(_err) return;
   *out << "<UnaryOp> --> " << _value << endl;
 }
 
@@ -53,7 +52,6 @@ RelationOp::RelationOp(string value):Node(value, "RelationOp")
 {}
 void RelationOp::print(ostream* out)
 {
-  if(_err) return;
   *out << "<RelationOp> --> " << _value << endl;
 }
 
@@ -63,7 +61,6 @@ ProductOp::ProductOp(string value):Node(value, "ProductOp")
 {}
 void ProductOp::print(ostream* out)
 {
-  if(_err) return;
   *out << "<ProductOp> --> " << _value << endl;
 }
 
@@ -73,7 +70,6 @@ SumOp::SumOp(string value):Node(value, "SumOp")
 {}
 void SumOp::print(ostream* out)
 {
-  if(_err) return;
   *out << "<SumOp> --> " << _value << endl;
 }
 
@@ -93,7 +89,6 @@ Name::Name(Node* name, Node* expression, int kind):Node("", "Name", kind)
 
 void Name::print(ostream* out)
 {
-  if(_err) return;
   *out << "<Name> --> ";
   switch(_kind)
   {  
@@ -162,7 +157,6 @@ Expression::Expression(Node* expression1, Node* op, Node* expression2, int kind)
 }
 void Expression::print(ostream* out)
 {
-  if(_err) return;
   *out << "<Expression> --> ";
   switch(_kind)
   {
@@ -266,7 +260,6 @@ void BrackExpression::recAdd(stack<Node*> & expressions)
 }
 void BrackExpression::print(ostream* out)
 {
-  if(_err) return;
   *out << "<BracketedExpression> --> ";
   if(_subNodes.size() > 1) *out << "<Expression> [<BracketedExpression>]";
   else *out << "<Expression>";
@@ -284,7 +277,6 @@ OptBracket::OptBracket(Node* expression):Node("", "OptBracket")
 }
 void OptBracket::print(ostream* out)
 {
-  if(_err) return;
   *out << "<ArrayBrackets> --> ";
   if(_subNodes.size() > 0) *out << "<ArrayBrackets>[]";
   else *out << "[]";
@@ -307,7 +299,6 @@ bool ArgList::getEmpty() const {return _empty;}
 
 void ArgList::print(ostream* out)
 {
-  if(_err) return;
   *out << "<ArgList> --> <Expression>";
   if(_subNodes.size() > 1) *out << " <ArgList>";
   *out << endl;
@@ -331,7 +322,6 @@ NewExpression::NewExpression(string simpletype, Node* type2, Node* brackexp, int
 }
 void NewExpression::print(ostream* out)
 {
-  if(_err) return;
   *out << "<NewExpression> --> new " << _value << " ";
   
   switch(_kind)
@@ -395,7 +385,6 @@ VarDec::VarDec(Node* type, string id, Node* bracks):Node(id)
 }
 void VarDec::print(ostream* out)
 {
-  if(_err) return;
   *out << "<Variable Declaration> --> ";
   if(_subNodes.size() > 0) 
   {
@@ -421,7 +410,6 @@ Multibracks::Multibracks():Node("")
 
 void Multibracks::print(ostream* out)
 {
-  if(_err) return;
   *out << "<Multibracks> --> ";
   if(_subNodes.size() > 0) *out << "<Multibracks>[]";
   else *out << " []";
@@ -436,9 +424,17 @@ SimpleType::SimpleType(string value):Node(value)
 {}
 void SimpleType::print(ostream* out)
 {
-  if(_err) return;
   *out << "<SimpleType> --> " << _value << endl;
 }
 
 
 /******************************************************************************/
+ErrNode::ErrNode()
+{
+  _err = true;
+}
+void ErrNode::print(ostream* out)
+{
+  cerr << "Tried to print an ErrNdoe!" << endl;
+  exit(1);
+}

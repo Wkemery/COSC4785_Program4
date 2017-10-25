@@ -171,4 +171,10 @@ public:
   void print(ostream* out);
 };
 
+class ErrNode : public Node
+{
+public:
+  ErrNode();
+  void print(ostream* out);
+};
 #endif
