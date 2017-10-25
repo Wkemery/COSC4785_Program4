@@ -136,6 +136,11 @@ void Statement::print(ostream* out)
       *out << "<ConditionalStatement>";
       break;
     }
+    case STMNTBLOCK:
+    {
+      *out << "<Block>";
+      break;
+    }
     default:
     {
       cerr << "FATAL ERROR!! Statement" << endl;
@@ -148,6 +153,135 @@ void Statement::print(ostream* out)
     {
       _subNodes[i]->print(out);
     }
+}
+/******************************************************************************/
+Block::Block(int kind):Node("", "Block", kind)
+{}
+
+Block::Block(Node* node1, int kind):Node("", "Block", kind)
+{
+  if(node1 != 0) //node1 can be a var dec RecursiveNode which can be empty
+  {
+    _subNodes.push_back(node1);
+    if(node1->getErr()) _err = true;
+  }
+}
+
+Block::Block(Node* node1, Node* node2, int kind):Node("", "Block", kind)
+{
+  if(node1 != 0) //node1 can be a var dec RecursiveNode which can be empty
+  {
+    _subNodes.push_back(node1);
+    if(node1->getErr()) _err = true;
+  }
+  _subNodes.push_back(node2); //node2 cannot be empty
+  if(node2->getErr()) _err = true;
+}
+
+void Block::print(ostream* out)
+{
+  *out << "<Block> --> ";
+  switch(_kind)
+  {
+    case BLOCKVARDEC:
+    {
+      if (_subNodes[0]->getType() == "RecursiveNode")
+        *out << "{ <VarDecRecursive> }";
+      else *out << "{ <Variable Declaration> }";
+      break;
+    }
+    case BLOCKSTMNT:
+    {
+      if(_subNodes[0]->getType() == "RecursiveNode")
+        *out << "{ <StatementRecursive> }";
+      else *out << "{ <Statement> }";
+      
+      break;
+    }
+    case BLOCKVARSTMNT:
+    {
+      *out << "{ ";
+      if (_subNodes[0]->getType() == "RecursiveNode")
+        *out << "<VarDecRecursive> ";
+      else *out << "<Variable Declaration> ";
+      if(_subNodes[1]->getType() == "RecursiveNode")
+        *out << "<StatementRecursive> ";
+      else *out << "<Statement> ";
+      *out << "}";
+      
+      break;
+    }
+    case BLOCKEMPTY:
+    {
+      *out << "{}";
+      break;
+    }
+    default:
+    {
+      cerr << "FATAL ERROR Block" <<endl;
+      exit(1);
+    }
+  }
+  
+  *out << endl;
+  for(unsigned int i = 0; i < _subNodes.size(); i++)
+  {
+    _subNodes[i]->print(out);
+  }
+}
+/******************************************************************************/
+
+RecursiveNode::RecursiveNode(Node* node1, Node* node2, int kind)
+:Node("", "RecursiveNode", kind)
+{
+  _subNodes.push_back(node1); //node1 cannot be empty
+  if(node1->getErr()) _err = true;
+  if(node2 != 0) //node 2 can be a var dec RecursiveNode which can be empty
+  {
+    _subNodes.push_back(node2);
+    if(node2->getErr()) _err = true;
+  }
+}
+
+void RecursiveNode::print(ostream* out)
+{
+  switch(_kind)
+  {
+    case RECVARDEC:
+    {
+      *out << "<VarDecRecursive> --> ";
+      if(_subNodes.size() == 2 )
+    {
+      if(_subNodes[1]->getType() == "VarDec")*out << "<VarDec> <VarDec>";
+      else *out << "<VarDec> <VarDecRecursive>";
+    }
+      else *out << "<VarDec>";
+      break;
+    }
+    case RECSTMNT:
+    {
+      *out << "<StatementRecursive> --> ";
+      if(_subNodes.size() == 2 ) 
+      {
+        if(_subNodes[1]->getType() == "Statement") 
+          *out << "<Statement> <Statement>";
+        else *out << " <Statement> <StatementRecursive>";
+      }
+      else *out << "<Statement>";
+      break;
+    }
+    default:
+    {
+      cerr << "FATAL ERROR RecursiveNode" << endl;
+      exit(1);
+    }
+  }
+  
+  *out << endl;
+  for(unsigned int i = 0; i < _subNodes.size(); i++)
+  {
+    _subNodes[i]->print(out);
+  }
 }
 /******************************************************************************/
 

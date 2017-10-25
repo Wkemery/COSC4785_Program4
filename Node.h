@@ -46,9 +46,18 @@ using namespace std;
 #define STMNTWHILE 4004
 #define SMTNTRETURN 4005
 #define STMNTCOND 4006
+#define STMNTBLOCK 4007
 
 #define CONDSTMNT 5001
 #define CONDSTMNTELSE 5002
+
+#define BLOCKVARDEC 6001
+#define BLOCKSTMNT 6002
+#define BLOCKVARSTMNT 6003
+#define BLOCKEMPTY 6004
+
+#define RECVARDEC 7001
+#define RECSTMNT 7002
 
 class Node
 {
@@ -101,6 +110,37 @@ public:
   Statement(int kind);
   Statement(Node* node1, Node* node2, int kind);
   Statement(Node* node1, int kind);
+  void print(ostream* out);
+};
+
+class Block : public Node
+{
+public:
+  Block(int kind);
+  Block(Node* node1, int kind);  
+  Block(Node* node1, Node* node2, int kind); 
+  void print(ostream* out);
+};
+
+// class VarDecR : public Node
+// {
+// public:
+//   VarDecR(Node* node1, Node* node2);
+//   void print(ostream* out);
+// };
+// 
+// class StatementR : public Node
+// {
+// public:
+//   StatementR(Node* node1, Node* node2);
+//   void print(ostream* out);
+//   
+// };
+
+class RecursiveNode: public Node
+{
+public:
+  RecursiveNode(Node* node1, Node* node2, int kind);
   void print(ostream* out);
 };
 

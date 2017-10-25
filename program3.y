@@ -55,7 +55,7 @@ void yyerror(const char *);
 
 %type<ttype> expression name multibracks unaryop relationop productop 
 %type<ttype> sumop arglist optExprBrack newexpression exp vardec statement
-%type<ttype> conditionalstatement
+%type<ttype> conditionalstatement block vardecr statementr
 
 %destructor {delete($$);} CLASS THIS IF ELSE WHILE RETURN PRINT READ VOID NEW 
 %destructor {delete($$);} NULLKEYWORD INT ASSIGNOP DOTOP COMMA LPAREN RPAREN 
@@ -66,9 +66,12 @@ void yyerror(const char *);
 %destructor {delete($$);} expression name multibracks unaryop 
 %destructor {delete($$);} relationop productop sumop arglist optExprBrack 
 %destructor {delete($$);} newexpression exp conditionalstatement statement
+%destructor {delete($$);} block vardecr statementr
 
-
+%precedence IFEL
+%precedence ELSE
 %precedence NAME
+/* %precedence SEMICO */
 /* %precedence EXP */
 %left DOUBEQ NOTEQ LESSEQ GREATEQ LESS GREAT RE
 %left PLUS MINUS DOUBBAR BIN
@@ -76,7 +79,8 @@ void yyerror(const char *);
 %precedence NEG
 /* %precedence OPTEXP */
 %precedence LBRACK
-/* %precedence IDENTIFIER */
+%precedence VARD
+%precedence IDENTIFIER
 /* %precedence LPAREN */
 
 
@@ -100,8 +104,7 @@ input:  %empty
         }
 ;
 
-exp: vardec {$$ = $1;}
-      | statement {$$ = $1;}
+exp: statement {$$ = $1;}
 ;
 
 statement: name ASSIGNOP expression SEMICO {
@@ -131,9 +134,44 @@ statement: name ASSIGNOP expression SEMICO {
             | conditionalstatement {
                   $$ = new Statement($1, STMNTCOND);
                   }
+            | block {
+                  $$ = new Statement($1, STMNTBLOCK);
+                  }
 ;
 
-conditionalstatement: IF LPAREN expression RPAREN statement {
+block:  LBRACE vardecr RBRACE{
+              $$ = new Block($2, BLOCKVARDEC);
+              delete $1; delete $3;
+              }
+        | LBRACE statementr RBRACE {
+              $$ = new Block($2, BLOCKSTMNT);
+              delete $1; delete $3;
+              }
+        | LBRACE vardecr statementr RBRACE{
+              $$ = new Block($2, $3, BLOCKVARSTMNT);
+              delete $1; delete $4;
+              }
+        | LBRACE RBRACE {
+              $$ = new Block(BLOCKEMPTY);
+              delete $1; delete $2;
+              }
+        
+;
+vardecr: vardec %prec VARD { $$ = $1; }
+          | vardec vardecr {
+/*                 $$ = new VarDecR($1, $2); */
+                    $$ = new RecursiveNode($1, $2, RECVARDEC);
+                }
+;
+statementr: statement { $$ = $1; }
+            | statement statementr {
+/*                   $$ = new StatementR($1, $2); */
+                    $$ = new RecursiveNode($1, $2, RECSTMNT);
+                  }
+;
+
+
+conditionalstatement: IF LPAREN expression RPAREN statement %prec IFEL{
                             $$ = new CondStatement($3, $5, CONDSTMNT);
                             delete $1; delete $2; delete $4;
                             }
