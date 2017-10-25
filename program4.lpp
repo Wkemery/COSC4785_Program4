@@ -1,6 +1,6 @@
 %{
   /*
-   * program3.lpp
+   * program4.lpp
    * Author: Wyatt Emery
    * Date: SEP 27, 2017
    *
@@ -17,7 +17,7 @@
   
   #include"Lexeme.h" 
   #include"Node.h"
-  #include"program3_bison.h"
+  #include"program4_bison.h"
   using namespace std;
   Lexeme token;
   int column = 1;
@@ -28,7 +28,7 @@ void yyerror(const char *string)
   return;
 }
 %}
-%option outfile="program3_lex.cpp"
+%option outfile="program4_lex.cpp"
 %option noyywrap
 %option yylineno
 

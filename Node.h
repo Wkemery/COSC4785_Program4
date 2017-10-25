@@ -47,6 +47,7 @@ using namespace std;
 #define SMTNTRETURN 4005
 #define STMNTCOND 4006
 #define STMNTBLOCK 4007
+#define STMNTVARDEC 4008
 
 #define CONDSTMNT 5001
 #define CONDSTMNTELSE 5002
@@ -118,7 +119,7 @@ class Block : public Node
 public:
   Block(int kind);
   Block(Node* node1, int kind);  
-  Block(Node* node1, Node* node2, int kind); 
+//   Block(Node* node1, Node* node2, int kind); 
   void print(ostream* out);
 };
 

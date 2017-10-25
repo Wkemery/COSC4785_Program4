@@ -1,5 +1,5 @@
 /*
- * program3.cpp
+ * program4.cpp
  * Author: Wyatt Emery
  * Date: SEP 27, 2017
  *
@@ -14,7 +14,7 @@
 #include<cstdlib>
 #include"Lexeme.h"
 #include"Node.h"
-#include"program3_bison.h"
+#include"program4_bison.h"
 using namespace std;
 
 yyFlexLexer scanner;

@@ -18,23 +18,23 @@ YACCFLAGS=--report=state -W -d -v
 
 .PHONY: clean tar
 
-program3: program3.cpp program3_lex.cpp program3_bison.c program3_bison.h \
+program4: program4.cpp program4_lex.cpp program4_bison.c program4_bison.h \
 	Lexeme.cpp Node.cpp Lexeme.h Node.h
-	${CXX} ${CXXFLAGS} program3.cpp program3_lex.cpp Lexeme.cpp program3_bison.c \
-	Node.cpp -o program3
+	${CXX} ${CXXFLAGS} program4.cpp program4_lex.cpp Lexeme.cpp program4_bison.c \
+	Node.cpp -o program4
 
-program3_lex.cpp: program3.lpp
-	${FLEX} ${FLEXFLAGS} program3.lpp
+program4_lex.cpp: program4.lpp
+	${FLEX} ${FLEXFLAGS} program4.lpp
 
-program3_bison.c: program3.y
-	${YACC} ${YACCFLAGS} -o program3_bison.c program3.y
+program4_bison.c: program4.y
+	${YACC} ${YACCFLAGS} -o program4_bison.c program4.y
 
 
-tar: program3.cpp program3.lpp Lexeme.cpp Lexeme.h Makefile
-	tar -cf wemery_HW3.tar program3.cpp program3.lpp Lexeme.cpp Lexeme.h \
-	program3.y Node.h Node.cpp program3_readme.txt program3.pdf Makefile
+tar: program4.cpp program4.lpp Lexeme.cpp Lexeme.h Makefile
+	tar -cf wemery_HW3.tar program4.cpp program4.lpp Lexeme.cpp Lexeme.h \
+	program4.y Node.h Node.cpp program4_readme.txt program4.pdf Makefile
 
 clean: 
-	/bin/rm -f *.o core.* *.output program3 program3_lex.cpp wemery_HW3.tar \
-    program3_bison.c program3_bison.h
+	/bin/rm -f *.o core.* *.output program4 program4_lex.cpp wemery_HW3.tar \
+    program4_bison.c program4_bison.h
 

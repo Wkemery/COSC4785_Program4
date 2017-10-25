@@ -141,6 +141,11 @@ void Statement::print(ostream* out)
       *out << "<Block>";
       break;
     }
+    case STMNTVARDEC:
+    {
+      *out << "<VariableDeclaration>";
+      break;
+    }
     default:
     {
       cerr << "FATAL ERROR!! Statement" << endl;
@@ -160,36 +165,36 @@ Block::Block(int kind):Node("", "Block", kind)
 
 Block::Block(Node* node1, int kind):Node("", "Block", kind)
 {
-  if(node1 != 0) //node1 can be a var dec RecursiveNode which can be empty
-  {
+//   if(node1 != 0) //node1 can be a var dec RecursiveNode which can be empty
+//   {
     _subNodes.push_back(node1);
     if(node1->getErr()) _err = true;
-  }
+//   }
 }
 
-Block::Block(Node* node1, Node* node2, int kind):Node("", "Block", kind)
-{
-  if(node1 != 0) //node1 can be a var dec RecursiveNode which can be empty
-  {
-    _subNodes.push_back(node1);
-    if(node1->getErr()) _err = true;
-  }
-  _subNodes.push_back(node2); //node2 cannot be empty
-  if(node2->getErr()) _err = true;
-}
+// Block::Block(Node* node1, Node* node2, int kind):Node("", "Block", kind)
+// {
+//   if(node1 != 0) //node1 can be a var dec RecursiveNode which can be empty
+//   {
+//     _subNodes.push_back(node1);
+//     if(node1->getErr()) _err = true;
+//   }
+//   _subNodes.push_back(node2); //node2 cannot be empty
+//   if(node2->getErr()) _err = true;
+// }
 
 void Block::print(ostream* out)
 {
   *out << "<Block> --> ";
   switch(_kind)
   {
-    case BLOCKVARDEC:
-    {
-      if (_subNodes[0]->getType() == "RecursiveNode")
-        *out << "{ <VarDecRecursive> }";
-      else *out << "{ <Variable Declaration> }";
-      break;
-    }
+//     case BLOCKVARDEC:
+//     {
+//       if (_subNodes[0]->getType() == "RecursiveNode")
+//         *out << "{ <VarDecRecursive> }";
+//       else *out << "{ <VariableDeclaration> }";
+//       break;
+//     }
     case BLOCKSTMNT:
     {
       if(_subNodes[0]->getType() == "RecursiveNode")
@@ -198,19 +203,19 @@ void Block::print(ostream* out)
       
       break;
     }
-    case BLOCKVARSTMNT:
-    {
-      *out << "{ ";
-      if (_subNodes[0]->getType() == "RecursiveNode")
-        *out << "<VarDecRecursive> ";
-      else *out << "<Variable Declaration> ";
-      if(_subNodes[1]->getType() == "RecursiveNode")
-        *out << "<StatementRecursive> ";
-      else *out << "<Statement> ";
-      *out << "}";
-      
-      break;
-    }
+//     case BLOCKVARSTMNT:
+//     {
+//       *out << "{ ";
+//       if (_subNodes[0]->getType() == "RecursiveNode")
+//         *out << "<VarDecRecursive> ";
+//       else *out << "<VariableDeclaration> ";
+//       if(_subNodes[1]->getType() == "RecursiveNode")
+//         *out << "<StatementRecursive> ";
+//       else *out << "<Statement> ";
+//       *out << "}";
+//       
+//       break;
+//     }
     case BLOCKEMPTY:
     {
       *out << "{}";
@@ -236,28 +241,28 @@ RecursiveNode::RecursiveNode(Node* node1, Node* node2, int kind)
 {
   _subNodes.push_back(node1); //node1 cannot be empty
   if(node1->getErr()) _err = true;
-  if(node2 != 0) //node 2 can be a var dec RecursiveNode which can be empty
-  {
+//   if(node2 != 0) //node 2 can be a var dec RecursiveNode which can be empty
+//   {
     _subNodes.push_back(node2);
     if(node2->getErr()) _err = true;
-  }
+//   }
 }
 
 void RecursiveNode::print(ostream* out)
 {
   switch(_kind)
   {
-    case RECVARDEC:
-    {
-      *out << "<VarDecRecursive> --> ";
-      if(_subNodes.size() == 2 )
-    {
-      if(_subNodes[1]->getType() == "VarDec")*out << "<VarDec> <VarDec>";
-      else *out << "<VarDec> <VarDecRecursive>";
-    }
-      else *out << "<VarDec>";
-      break;
-    }
+//     case RECVARDEC:
+//     {
+//       *out << "<VarDecRecursive> --> ";
+//       if(_subNodes.size() == 2 )
+//     {
+//       if(_subNodes[1]->getType() == "VarDec")*out << "<VarDec> <VarDec>";
+//       else *out << "<VarDec> <VarDecRecursive>";
+//     }
+//       else *out << "<VarDec>";
+//       break;
+//     }
     case RECSTMNT:
     {
       *out << "<StatementRecursive> --> ";
@@ -702,7 +707,7 @@ VarDec::VarDec(string type, string id): Node(id, "VarDec")
 }
 void VarDec::print(ostream* out)
 {
-  *out << "<Variable Declaration> --> ";
+  *out << "<VariableDeclaration> --> ";
   if(_subNodes.size() > 0) 
   {
     *out << "<Multibracks> " << _value << ";" << endl;
