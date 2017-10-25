@@ -55,7 +55,8 @@ void yyerror(const char *);
 
 %type<ttype> expression name multibracks unaryop relationop productop 
 %type<ttype> sumop arglist optExprBrack newexpression exp vardec statement
-%type<ttype> conditionalstatement block statementr
+%type<ttype> conditionalstatement block statementr classbody decr classbodydec
+%type<ttype> type methoddec constructordec paramlist param
 
 %destructor {delete($$);} CLASS THIS IF ELSE WHILE RETURN PRINT READ VOID NEW 
 %destructor {delete($$);} NULLKEYWORD INT ASSIGNOP DOTOP COMMA LPAREN RPAREN 
@@ -66,7 +67,8 @@ void yyerror(const char *);
 %destructor {delete($$);} expression name multibracks unaryop 
 %destructor {delete($$);} relationop productop sumop arglist optExprBrack 
 %destructor {delete($$);} newexpression exp conditionalstatement statement
-%destructor {delete($$);} block statementr
+%destructor {delete($$);} block statementr classbody decr classbodydec type
+%destructor {delete($$);} methoddec constructordec paramlist param
 
 %precedence IFEL
 %precedence ELSE
@@ -103,9 +105,29 @@ input:  %empty
         }
 ;
 
-exp: statement {$$ = $1;}
+exp: classbody {$$ = $1;}
 ;
 
+classbody:  LBRACE RBRACE {
+                  $$ = new ClassBody(CLASSBODYEMPTY);
+                  delete $1; delete $2;
+                  }
+            | LBRACE decr RBRACE {
+                    $$ = new ClassBody($2, CLASSBODY);
+                    delete $1; delete $3;
+                  }
+;
+
+decr: classbodydec { $$ = $1; }
+      | classbodydec decr {
+            $$ = new RecursiveNode($1, $2, RECDEC);  
+            }
+;
+
+classbodydec: vardec { $$ = $1;}
+      | constructordec { $$ = $1; }
+      | methoddec { $$ = $1; }
+;
 statement: name ASSIGNOP expression SEMICO {
                 $$ = new Statement($1, $3, STMNTNAMEEXP);
                 delete $2; delete $4;
@@ -182,8 +204,54 @@ conditionalstatement: IF LPAREN expression RPAREN statement %prec IFEL{
                             delete $1; delete $2; delete $4; delete $6;
                             }
 ;
+constructordec: IDENTIFIER LPAREN paramlist RPAREN block {
+                      $$ = new ConstructorDec($1->value, $3, $5, CONSTDEC);
+                      delete $1; delete $2; delete $4;
+                      }
+                | IDENTIFIER LPAREN RPAREN block {
+                      $$ = new ConstructorDec($1->value, $4, CONSTDECEMPTY);
+                      delete $1; delete $2; delete $3;
+                }
+;
 
-vardec: IDENTIFIER IDENTIFIER SEMICO {
+methoddec: type IDENTIFIER LPAREN paramlist RPAREN block {
+                $$ = new MethodDec($1, $2->value, $4, $6, METHODDECTYPE);
+                delete $2; delete $3; delete $5;
+                }
+          | type IDENTIFIER LPAREN RPAREN block {
+                $$ = new MethodDec($1, $2->value, $5, METHODDECTYPEEMPTY);
+                delete $2; delete $3; delete $4;
+          }
+          | VOID IDENTIFIER LPAREN paramlist RPAREN block {
+            $$ = new MethodDec($2->value, $4, $6, METHODDECVOID);
+            delete $1; delete $2; delete $3; delete $5;
+            
+          }
+          | VOID IDENTIFIER LPAREN RPAREN block {
+            $$ = new MethodDec($2->value, $5, METHODDECVOIDEMPTY);
+            delete $1; delete $2; delete $3; delete $4;
+          }
+
+;
+
+paramlist: param { $$ = $1;}
+            | param COMMA paramlist {
+                  $$ = new ParamList($1, $3);
+                  delete $2;
+            }
+;
+
+param: type IDENTIFIER {
+            $$ = new Param($1, $2->value);
+            delete $2;
+            }
+
+vardec: type IDENTIFIER SEMICO {
+              $$ = new VarDec($1, $2->value);
+              delete $2; delete $3;
+              }
+
+/*IDENTIFIER IDENTIFIER SEMICO {
             $$ = new VarDec($1->value, $2->value);
             delete $1; delete $2; delete $3;
             }
@@ -227,7 +295,7 @@ vardec: IDENTIFIER IDENTIFIER SEMICO {
           << $2->column+$2->value.length() <<endl << endl;
           yyerrok;
           delete $1; delete $2;
-          }
+          }*/
 ;
 expression: NUM { 
                 $$ = new Expression($1->value, EXPNUM);
@@ -445,6 +513,24 @@ productop:  TIMES {$$ = new ProductOp("*"); delete $1;}
 sumop:  MINUS {$$ = new SumOp("-"); delete $1;}
 | PLUS {$$ = new SumOp("+"); delete $1;}
 | DOUBBAR {$$ = new SumOp("||"); delete $1;}
+;
+
+type: INT {
+            $$ = new Type("int", TYPE);
+            delete $1;
+            }
+      | IDENTIFIER {
+            $$ = new Type($1->value, TYPE);
+            delete $1;
+            }
+      | INT multibracks {
+            $$ = new Type("int", $2, TYPEBRACKS);
+            delete $1;
+            }
+      | IDENTIFIER multibracks {
+            $$ = new Type($1->value, $2, TYPEBRACKS);
+            delete $1;
+            }
 ;
 
 multibracks: LBRACK RBRACK {$$ = new Multibracks(); delete $1; delete $2;}

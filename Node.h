@@ -57,8 +57,25 @@ using namespace std;
 #define BLOCKVARSTMNT 6003
 #define BLOCKEMPTY 6004
 
-#define RECVARDEC 7001
 #define RECSTMNT 7002
+#define RECDEC 7003
+
+#define CLASSBODYEMPTY 8001
+#define CLASSBODY 8002
+
+#define CONSTDEC 9001
+#define CONSTDECEMPTY 9002
+
+#define TYPEBRACKS 10001
+#define TYPE 10002
+
+#define METHODDECVOID 11001
+#define METHODDECTYPE 11002
+#define METHODDECTYPEEMPTY 11003
+#define METHODDECVOIDEMPTY 11004
+
+#define PARAMLDONE 12001
+#define PARAMLIST 12002
 
 class Node
 {
@@ -77,33 +94,15 @@ public:
   string getType(void) const;
 };
 
-class UnaryOp : public Node
+class ClassBody : public Node
 {
 public:
-  UnaryOp(string value);
+  ClassBody(int kind);
+  ClassBody(Node* node1, int kind);
   void print(ostream* out);
 };
 
-class RelationOp : public Node
-{
-public:
-  RelationOp(string value);
-  void print(ostream* out);
-};
 
-class ProductOp : public Node
-{
-public:
-  ProductOp(string value);
-  void print(ostream* out);
-};
-
-class SumOp : public Node
-{
-public:
-  SumOp(string value);
-  void print(ostream* out);
-};
 
 class Statement : public Node
 {
@@ -203,6 +202,20 @@ public:
   void print(ostream* out);
 };
 
+class ParamList : public Node
+{
+public:
+  ParamList(Node* node1, Node* node2);
+  void print(ostream* out);
+};
+
+class Param : public Node
+{
+public:
+  Param(Node* node1, string value);
+  void print(ostream* out);
+};
+
 class NewExpression : public Node
 {
 public:
@@ -211,16 +224,45 @@ public:
   void print(ostream* out);
 };
 
+class ConstructorDec : public Node
+{
+public:
+  ConstructorDec(string value, Node* node1, Node* node2, int kind);
+  ConstructorDec(string value, Node* node1, int kind);
+  
+  void print(ostream* out);
+};
+
+class MethodDec : public Node
+{
+public:
+  MethodDec(Node* node1, string value, Node* node2, Node* node3, int kind);
+  MethodDec(Node* node1, string value, Node* node2, int kind);
+  MethodDec(string value, Node* node1, Node* node2, int kind);
+  MethodDec(string value, Node* node1, int kind);
+  void print(ostream* out);
+private:
+  string _resultType;
+};
 
 class VarDec: public Node
 {
 private:
-  string _type;
+//   string _type;
 public:
-  VarDec(string type, string id);
-  VarDec(string type, string id, Node* bracks);
+  VarDec(Node* node1, string value);
+//   VarDec(string type, string id);
+//   VarDec(string type, string id, Node* bracks);
 //   VarDec(Node* type, string id, Node* bracks);
-  string getID(void) const;
+//   string getID(void) const;
+  void print(ostream* out);
+};
+
+class Type: public Node
+{
+public:
+  Type(string value, int kind);
+  Type(string value, Node* node1, int kind);
   void print(ostream* out);
 };
 
@@ -232,10 +274,38 @@ public:
   void print(ostream* out);
 };
 
-class SimpleType: public Node
+// class SimpleType: public Node
+// {
+// public:
+//   SimpleType(string value);
+//   void print(ostream* out);
+// };
+
+class UnaryOp : public Node
 {
 public:
-  SimpleType(string value);
+  UnaryOp(string value);
+  void print(ostream* out);
+};
+
+class RelationOp : public Node
+{
+public:
+  RelationOp(string value);
+  void print(ostream* out);
+};
+
+class ProductOp : public Node
+{
+public:
+  ProductOp(string value);
+  void print(ostream* out);
+};
+
+class SumOp : public Node
+{
+public:
+  SumOp(string value);
   void print(ostream* out);
 };
 

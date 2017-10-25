@@ -13,7 +13,7 @@ using namespace std;
 #include<cstdlib>
 
 Node::Node(string value = "", string type = "", int kind = 0)
-:_value(value), _type(type), _kind(kind)
+:_value(value), _type(type), _kind(kind), _err(false)
 {}
 Node::~Node()
 {
@@ -32,43 +32,47 @@ string Node::getType(void) const
 }
 
 
-/******************************************************************************/
-
-UnaryOp::UnaryOp(string value):Node(value, "UnaryOp")
-{}
-void UnaryOp::print(ostream* out)
-{
-  *out << "<UnaryOp> --> " << _value << endl;
-}
-
 
 /******************************************************************************/
 
-RelationOp::RelationOp(string value):Node(value, "RelationOp")
+ClassBody::ClassBody(int kind):Node("", "ClassBody", kind)
 {}
-void RelationOp::print(ostream* out)
+
+ClassBody::ClassBody(Node* node1, int kind):Node("", "ClassBody", kind)
 {
-  *out << "<RelationOp> --> " << _value << endl;
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true; 
 }
 
-/******************************************************************************/
-
-ProductOp::ProductOp(string value):Node(value, "ProductOp")
-{}
-void ProductOp::print(ostream* out)
+void ClassBody::print(ostream* out)
 {
-  *out << "<ProductOp> --> " << _value << endl;
+  *out << "<ClassBody> --> ";
+  
+  switch(_kind)
+  {
+    case CLASSBODYEMPTY:
+    {
+      *out << "{}";
+      break;
+    }
+    case CLASSBODY:
+    {
+     *out << "<" << _subNodes[0]->getType() << ">";
+      break;
+    }
+    default:
+    {
+      cerr << "FATAL ERROR ClassBody" << endl;
+      exit(1);
+    }
+  }
+  
+  *out << endl;
+  for(unsigned int i = 0; i < _subNodes.size(); i++)
+  {
+    _subNodes[i]->print(out);
+  }
 }
-
-/******************************************************************************/
-
-SumOp::SumOp(string value):Node(value, "SumOp")
-{}
-void SumOp::print(ostream* out)
-{
-  *out << "<SumOp> --> " << _value << endl;
-}
-
 /******************************************************************************/
 
 Statement::Statement(Node* node1, Node* node2, int kind)
@@ -275,6 +279,13 @@ void RecursiveNode::print(ostream* out)
       else *out << "<Statement>";
       break;
     }
+    case RECDEC:
+    {
+      *out << "<RecursiveNode> --> ";
+      *out << "<"<< _subNodes[0]->getType() << ">" << " <" 
+      << _subNodes[1]->getType() <<  ">";
+      break;
+    }
     default:
     {
       cerr << "FATAL ERROR RecursiveNode" << endl;
@@ -287,6 +298,8 @@ void RecursiveNode::print(ostream* out)
   {
     _subNodes[i]->print(out);
   }
+  
+  *out << endl;
 }
 /******************************************************************************/
 
@@ -623,6 +636,49 @@ void ArgList::print(ostream* out)
 }
 /******************************************************************************/
 
+ParamList::ParamList(Node* node1, Node* node2)
+:Node("", "ParamList")
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+  
+  _subNodes.push_back(node2);
+  if(node2->getErr()) _err = true;
+}
+
+void ParamList::print(ostream* out)
+{
+  *out << "<ParamList> --> " << " <Param> " << "<"<< _subNodes[1]->getType() << ">";
+  
+  *out << endl;
+  for(unsigned int i = 0; i < _subNodes.size(); i++)
+  {
+    _subNodes[i]->print(out);
+  }
+}
+
+/******************************************************************************/
+
+Param::Param(Node* node1, string value)
+:Node(value, "Param")
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+}
+
+
+void Param::print(ostream* out)
+{
+  *out << "<Param> --> " << " <Type> " << _value;
+  
+  *out << endl;
+  for(unsigned int i = 0; i < _subNodes.size(); i++)
+  {
+    _subNodes[i]->print(out);
+  }
+}
+/******************************************************************************/
+
 NewExpression::NewExpression(string simpletype, Node* arglist, int kind)
 :Node(simpletype, "NewExpression", kind)
 {
@@ -693,34 +749,222 @@ void NewExpression::print(ostream* out)
 
 /******************************************************************************/
 
-VarDec::VarDec(string type, string id, Node* bracks):Node(id, "VarDec")
+ConstructorDec::ConstructorDec(string value, Node* node1, Node* node2, int kind)
+:Node(value, "ConstructorDec", kind)
 {
-  _type = type;
-  _subNodes.push_back(bracks);
-  if(bracks->getErr()) _err = true;
-  
+    _subNodes.push_back(node1);
+    if(node1->getErr()) _err = true;
+
+  _subNodes.push_back(node2);
+  if(node2->getErr()) _err = true;
 }
 
-VarDec::VarDec(string type, string id): Node(id, "VarDec")
+ConstructorDec::ConstructorDec(string value, Node* node1, int kind)
+:Node(value, "ConstructorDec", kind)
 {
-  _type = type;
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
 }
+
+
+void ConstructorDec::print(ostream* out)
+{
+  *out << "<ConstructorDec> --> " << _value;
+  
+  switch(_kind)
+  {
+    case CONSTDEC:
+    {
+      *out << "(<ParamList>)";
+      break;
+    }
+    case CONSTDECEMPTY:
+    {
+      *out << "()";
+      break;
+    }
+    default:
+    {
+      cerr << "FATAL ERROR ConstructorDec" << endl;
+      exit(1);
+    }
+  }
+  
+  *out << " <Block>" << endl;
+  
+  for(unsigned int i = 0; i < _subNodes.size(); i++)
+  {
+    _subNodes[i]->print(out);
+    
+  }
+  *out << endl;
+}
+
+/******************************************************************************/
+
+MethodDec::MethodDec(Node* node1, string value, Node* node2, Node* node3, int kind)
+:Node(value, "MethodDec", kind)
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+  
+  _subNodes.push_back(node2);
+  if(node2->getErr()) _err = true;
+  
+  _subNodes.push_back(node3);
+  if(node3->getErr()) _err = true;
+}
+
+MethodDec::MethodDec(Node* node1, string value, Node* node2, int kind)
+:Node(value, "MethodDec", kind)
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+  
+  _subNodes.push_back(node2);
+  if(node2->getErr()) _err = true;
+}
+
+MethodDec::MethodDec(string value, Node* node1, Node* node2, int kind)
+:Node(value, "MethodDec", kind)
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+  
+  _subNodes.push_back(node2);
+  if(node2->getErr()) _err = true;
+}
+
+MethodDec::MethodDec(string value, Node* node1, int kind)
+:Node(value, "MethodDec", kind)
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+
+}
+
+
+void MethodDec::print(ostream* out)
+{
+  *out << "<MethodDec> --> "; 
+  switch(_kind)
+  {
+    case METHODDECVOID:
+    {
+      *out << "void " << _value << " (<ParameterList>) "; 
+      break;
+    }
+    case METHODDECTYPE:
+    {
+      *out << "<Type> " << _value << " (<ParameterList>) ";
+      break;
+    }
+    case METHODDECTYPEEMPTY:
+    {
+      *out << "<Type> " << _value << " () ";
+      break;
+    }
+    case METHODDECVOIDEMPTY:
+    {
+      *out << "void " << _value << " () ";
+      break;
+    }
+    default:
+    {
+      cerr << "FATAL ERROR MethodDec" << endl;
+      exit(1);
+    }
+  }
+  *out << " <Block>" << endl;
+  for(unsigned int i = 0; i < _subNodes.size(); i++)
+  {
+    _subNodes[i]->print(out);
+    
+  }
+  *out << endl;
+}
+
+/******************************************************************************/
+
+VarDec::VarDec(Node* node1, string value): Node(value, "VarDec")
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+}
+
+// VarDec::VarDec(string type, string id, Node* bracks):Node(id, "VarDec")
+// {
+//   _type = type;
+//   _subNodes.push_back(bracks);
+//   if(bracks->getErr()) _err = true;
+//   
+// }
+
+// VarDec::VarDec(string type, string id): Node(id, "VarDec")
+// {
+//   _type = type;
+// }
 void VarDec::print(ostream* out)
 {
-  *out << "<VariableDeclaration> --> ";
-  if(_subNodes.size() > 0) 
+//   *out << "<VariableDeclaration> --> ";
+//   if(_subNodes.size() > 0) 
+//   {
+//     *out << "<Multibracks> " << _value << ";" << endl;
+//     _subNodes[0]->print(out);
+//   }
+//   else
+//   {
+//     *out << _type << " " << _value << ";" << endl;
+//   }
+  *out << "<VarDec> --> <Type> " << _value << " ;" << endl;
+  for(unsigned int i = 0; i < _subNodes.size(); i++)
   {
-    *out << "<Multibracks> " << _value << ";" << endl;
-    _subNodes[0]->print(out);
-  }
-  else
-  {
-    *out << _type << " " << _value << ";" << endl;
+    _subNodes[i]->print(out);
+    
   }
 }
 
 /******************************************************************************/
 
+Type::Type(string value, int kind):Node(value, "Type", kind)
+{}
+
+Type::Type(string value, Node* node1, int kind):Node(value, "Type", kind)
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+}
+
+void Type::print(ostream* out)
+{
+  *out << "<Type> --> ";
+  switch(_kind)
+  {
+    case TYPE:
+    {
+      *out << _value;
+      break;
+    }
+    case TYPEBRACKS:
+    {
+      *out << _value << " <RecursiveBrackets>"; 
+      break;
+    }
+    default:
+    {
+      cerr << "FATAL ERROR Type" << endl;
+      exit(1);
+    }
+  }
+  
+  *out << endl;
+  for(unsigned int i = 0; i < _subNodes.size(); i++)
+  {
+    _subNodes[i]->print(out);
+    
+  }
+}
+/******************************************************************************/
 
 Multibracks::Multibracks(Node* simpletype):Node("", "Multibracks")
 {
@@ -733,23 +977,50 @@ Multibracks::Multibracks():Node("", "Multibracks")
 
 void Multibracks::print(ostream* out)
 {
-  *out << "<Multibracks> --> ";
-  if(_subNodes.size() > 0) *out << "<Multibracks>[]";
+  *out << "<RecursiveBrackets> --> ";
+  if(_subNodes.size() > 0) *out << "<RecursiveBrackets>[]";
   else *out << " []";
   *out << endl;
   if(_subNodes.size() > 0) _subNodes[0]->print(out);
 }
 
+
 /******************************************************************************/
 
-
-SimpleType::SimpleType(string value):Node(value, "SimpleType")
+UnaryOp::UnaryOp(string value):Node(value, "UnaryOp")
 {}
-void SimpleType::print(ostream* out)
+void UnaryOp::print(ostream* out)
 {
-  *out << "<SimpleType> --> " << _value << endl;
+  *out << "<UnaryOp> --> " << _value << endl;
 }
 
+
+/******************************************************************************/
+
+RelationOp::RelationOp(string value):Node(value, "RelationOp")
+{}
+void RelationOp::print(ostream* out)
+{
+  *out << "<RelationOp> --> " << _value << endl;
+}
+
+/******************************************************************************/
+
+ProductOp::ProductOp(string value):Node(value, "ProductOp")
+{}
+void ProductOp::print(ostream* out)
+{
+  *out << "<ProductOp> --> " << _value << endl;
+}
+
+/******************************************************************************/
+
+SumOp::SumOp(string value):Node(value, "SumOp")
+{}
+void SumOp::print(ostream* out)
+{
+  *out << "<SumOp> --> " << _value << endl;
+}
 
 /******************************************************************************/
 ErrNode::ErrNode()
