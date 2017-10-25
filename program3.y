@@ -53,8 +53,9 @@ void yyerror(const char *);
 
 %token<token>IDENTIFIER SEMICO NUM
 
-%type<ttype> expression name multibracks unaryop relationop productop
+%type<ttype> expression name multibracks unaryop relationop productop 
 %type<ttype> sumop arglist optExprBrack newexpression exp vardec statement
+%type<ttype> conditionalstatement
 
 %destructor {delete($$);} CLASS THIS IF ELSE WHILE RETURN PRINT READ VOID NEW 
 %destructor {delete($$);} NULLKEYWORD INT ASSIGNOP DOTOP COMMA LPAREN RPAREN 
@@ -64,7 +65,7 @@ void yyerror(const char *);
 
 %destructor {delete($$);} expression name multibracks unaryop 
 %destructor {delete($$);} relationop productop sumop arglist optExprBrack 
-%destructor {delete($$);} newexpression exp
+%destructor {delete($$);} newexpression exp conditionalstatement statement
 
 
 %precedence NAME
@@ -107,7 +108,41 @@ statement: name ASSIGNOP expression SEMICO {
                 $$ = new Statement($1, $3, STMNTNAMEEXP);
                 delete $2; delete $4;
                 }
+            | name LPAREN arglist RPAREN SEMICO {
+                  $$ = new Statement($1, $3, STMNTNAMEARGL);
+                  delete $2; delete $4; delete $5;
+                  }
+            | PRINT LPAREN arglist RPAREN SEMICO {
+                  $$ = new Statement($3, STMNTPRNTARGL);
+                  delete $1; delete $2; delete $4; delete $5;
+                  }
+            | WHILE LPAREN expression RPAREN statement {
+                  $$ = new Statement($3, $5, STMNTWHILE);
+                  delete $1; delete $2; delete $4;
+                  }
+            | RETURN expression SEMICO{
+                  $$ = new Statement($2, SMTNTRETURN);
+                  delete $1; delete $3;
+                  }
+            | RETURN SEMICO {
+                  $$ = new Statement(SMTNTRETURN);
+                  delete $1; delete $2;
+                  }
+            | conditionalstatement {
+                  $$ = new Statement($1, STMNTCOND);
+                  }
 ;
+
+conditionalstatement: IF LPAREN expression RPAREN statement {
+                            $$ = new CondStatement($3, $5, CONDSTMNT);
+                            delete $1; delete $2; delete $4;
+                            }
+                      | IF LPAREN expression RPAREN statement ELSE statement {
+                            $$ = new CondStatement($3, $5, $7, CONDSTMNTELSE);
+                            delete $1; delete $2; delete $4; delete $6;
+                            }
+;
+
 vardec: IDENTIFIER IDENTIFIER SEMICO {
             $$ = new VarDec($1->value, $2->value);
             delete $1; delete $2; delete $3;

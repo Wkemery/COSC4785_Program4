@@ -71,22 +71,69 @@ void SumOp::print(ostream* out)
 
 /******************************************************************************/
 
-Statement::Statement(Node* node1, Node* node2, int kind):Node("", "Statement", kind)
+Statement::Statement(Node* node1, Node* node2, int kind)
+:Node("", "Statement", kind)
 {
   _subNodes.push_back(node1);
   if(node1->getErr()) _err = true;
   
-  _subNodes.push_back(node2);
-  if(node2->getErr()) _err = true;
+  if(node2 != 0) //node2 can be an Arglist which can be empty.
+  {
+    _subNodes.push_back(node2);
+    if(node2->getErr()) _err = true;
+  }
 }
+Statement::Statement(Node* node1, int kind):Node("", "Statement", kind)
+{
+  if(node1 != 0) //node 1 can be an Arglist which can be empty
+  {
+    _subNodes.push_back(node1);
+    if(node1->getErr()) _err = true;
+  }
+}
+
+Statement::Statement(int kind):Node("", "Statement", kind)
+{}
+
 void Statement::print(ostream* out)
 {
-  cout << "<Statement> --> ";
+  *out << "<Statement> --> ";
   switch(_kind)
   {
     case STMNTNAMEEXP:
     {
-      cout << "<Name> = <Expression> ;";
+      *out << "<Name> = <Expression> ;";
+      break;
+    }
+    case STMNTNAMEARGL:
+    {
+      *out << "<Name> ";
+      if(_subNodes.size() == 2) *out << "<Name> (<ArgList>) ;";
+      else *out << "() ;";
+      break;
+    }
+    case STMNTPRNTARGL:
+    {
+      *out << "print ";
+      if(_subNodes.size() == 1 ) *out << "(<ArgList>) ;";
+      else *out << "() ;";
+      break;
+    }
+    case STMNTWHILE:
+    {
+      *out << "while (<Expression>) <Statement> ";
+      break;
+    }
+    case SMTNTRETURN:
+    {
+      *out << "return ";
+      if(_subNodes.size() == 1) *out << "<Expression> ";
+      *out << ";";
+      break;
+    }
+    case STMNTCOND:
+    {
+      *out << "<ConditionalStatement>";
       break;
     }
     default:
@@ -101,7 +148,58 @@ void Statement::print(ostream* out)
     {
       _subNodes[i]->print(out);
     }
-      
+}
+/******************************************************************************/
+
+CondStatement::CondStatement(Node* node1, Node* node2, int kind)
+:Node("", "CondStatement", kind)
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+  
+  _subNodes.push_back(node2);
+  if(node2->getErr()) _err = true;
+}
+
+CondStatement::CondStatement(Node* node1, Node* node2, Node* node3, int kind)
+:Node("", "CondStatement", kind)
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+  
+  _subNodes.push_back(node2);
+  if(node2->getErr()) _err = true;
+  
+  _subNodes.push_back(node3);
+  if(node3->getErr()) _err = true;
+}
+
+void CondStatement::print(ostream* out)
+{
+  *out << "<ConditionalStatement> --> ";
+  switch(_kind)
+  {
+    case CONDSTMNT:
+    {
+      *out << "if (<Expression>) <Statement>";
+      break;
+    }
+    case CONDSTMNTELSE:
+    {
+      *out << "if (<Expression>) <Statement> else <Statement>";
+      break;
+    }
+    default:
+    {
+      cerr << "FATAL ERROR!! CondStatement" << endl;
+      exit(1);
+    }
+  }
+  *out << endl;
+  for(unsigned int i = 0; i < _subNodes.size(); i++)
+  {
+    _subNodes[i]->print(out);
+  }
 }
 
 /******************************************************************************/
@@ -249,7 +347,7 @@ void Expression::print(ostream* out)
     }
     case EXPSUMOP:
     {
-      *out << "<Expression <SumOp> <Expression>";
+      *out << "<Expression> <SumOp> <Expression>";
       break;
     }
     case EXPPAREN:

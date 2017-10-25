@@ -41,6 +41,14 @@ using namespace std;
 #define NEWEXP 3005 /* NewExpression -> */
 
 #define STMNTNAMEEXP 4001
+#define STMNTNAMEARGL 4002
+#define STMNTPRNTARGL 4003
+#define STMNTWHILE 4004
+#define SMTNTRETURN 4005
+#define STMNTCOND 4006
+
+#define CONDSTMNT 5001
+#define CONDSTMNTELSE 5002
 
 class Node
 {
@@ -90,7 +98,17 @@ public:
 class Statement : public Node
 {
 public:
+  Statement(int kind);
   Statement(Node* node1, Node* node2, int kind);
+  Statement(Node* node1, int kind);
+  void print(ostream* out);
+};
+
+class CondStatement : public Node 
+{
+public:
+  CondStatement(Node* node1, Node* node2, int kind);
+  CondStatement(Node* node1, Node* node2, Node* node3, int kind);
   void print(ostream* out);
 };
 
