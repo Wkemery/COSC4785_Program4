@@ -40,6 +40,8 @@ using namespace std;
 #define NEWEXPMULTI 3004 /* NewExpression -> */
 #define NEWEXP 3005 /* NewExpression -> */
 
+#define STMNTNAMEEXP 4001
+
 class Node
 {
 protected:
@@ -82,6 +84,13 @@ class SumOp : public Node
 {
 public:
   SumOp(string value);
+  void print(ostream* out);
+};
+
+class Statement : public Node
+{
+public:
+  Statement(Node* node1, Node* node2, int kind);
   void print(ostream* out);
 };
 
@@ -151,7 +160,7 @@ private:
 public:
   VarDec(string type, string id);
   VarDec(string type, string id, Node* bracks);
-  VarDec(Node* type, string id, Node* bracks);
+//   VarDec(Node* type, string id, Node* bracks);
   string getID(void) const;
   void print(ostream* out);
 };
