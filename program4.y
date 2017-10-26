@@ -54,9 +54,9 @@ void yyerror(const char *);
 %token<token>IDENTIFIER SEMICO NUM
 
 %type<ttype> expression name multibracks unaryop relationop productop 
-%type<ttype> sumop arglist optExprBrack newexpression exp vardec statement
-%type<ttype> conditionalstatement block statementr classbody decr classbodydec
-%type<ttype> type methoddec constructordec paramlist param
+%type<ttype> sumop arglist optExprBrack newexpression classdec vardec statement
+%type<ttype> conditionalstatement block statementr classbody vardecr param
+%type<ttype> type methoddec constructordec paramlist constructordecr methoddecr
 
 %destructor {delete($$);} CLASS THIS IF ELSE WHILE RETURN PRINT READ VOID NEW 
 %destructor {delete($$);} NULLKEYWORD INT ASSIGNOP DOTOP COMMA LPAREN RPAREN 
@@ -66,9 +66,10 @@ void yyerror(const char *);
 
 %destructor {delete($$);} expression name multibracks unaryop 
 %destructor {delete($$);} relationop productop sumop arglist optExprBrack 
-%destructor {delete($$);} newexpression exp conditionalstatement statement
-%destructor {delete($$);} block statementr classbody decr classbodydec type
-%destructor {delete($$);} methoddec constructordec paramlist param
+%destructor {delete($$);} newexpression classdec conditionalstatement statement
+%destructor {delete($$);} block statementr classbody type vardecr param
+%destructor {delete($$);} methoddec constructordec paramlist constructordecr
+%destructor {delete($$);} methoddecr
 
 %precedence IFEL
 %precedence ELSE
@@ -90,7 +91,7 @@ void yyerror(const char *);
 
 %% 
 input:  %empty
-        | input exp { 
+        | input classdec { 
           if($2!=0) 
           {
             if(!$2->getErr()) forest.push_back($2);
@@ -105,29 +106,56 @@ input:  %empty
         }
 ;
 
-exp: classbody {$$ = $1;}
+classdec: CLASS IDENTIFIER classbody {
+                $$ = new ClassDec($2->value, $3);
+                delete $1; delete $2;
+                }
 ;
 
 classbody:  LBRACE RBRACE {
                   $$ = new ClassBody(CLASSBODYEMPTY);
                   delete $1; delete $2;
                   }
-            | LBRACE decr RBRACE {
-                    $$ = new ClassBody($2, CLASSBODY);
-                    delete $1; delete $3;
+            | LBRACE vardecr RBRACE{
+                  $$ = new ClassBody($2, CLASSBODYVAR);
+                  delete $1; delete $3;
+                  }
+            | LBRACE vardecr constructordecr RBRACE{
+                  $$ = new ClassBody($2, $3, CLASSBODYVARCON);
+                  delete $1; delete $4;
+                  }
+            | LBRACE vardecr constructordecr methoddecr RBRACE{
+              $$ = new ClassBody($2, $3, $4, CLASSBODYVARCONMET);
+                  delete $1; delete $5;
+                  }
+            | LBRACE constructordecr methoddecr RBRACE{
+                  $$ = new ClassBody($2, $3, CLASSBODYCONMET);
+                  delete $1; delete $4;
+                  }
+            | LBRACE methoddecr RBRACE{
+                  $$ = new ClassBody($2, CLASSBODYMET);
+                  delete $1; delete $3;
                   }
 ;
 
-decr: classbodydec { $$ = $1; }
-      | classbodydec decr {
-            $$ = new RecursiveNode($1, $2, RECDEC);  
-            }
+vardecr: vardec { $$ = $1; }
+          | vardecr vardec {
+                $$ = new RecursiveNode($1, $2, RECVARDEC);  
+                }
 ;
 
-classbodydec: vardec { $$ = $1;}
-      | constructordec { $$ = $1; }
-      | methoddec { $$ = $1; }
+constructordecr: constructordec { $$ = $1; }
+                  | constructordecr constructordec {
+                        $$ = new RecursiveNode($1, $2, RECCONDEC);  
+                        }
 ;
+
+methoddecr: methoddec { $$ = $1; }
+            | methoddecr methoddec {
+                  $$ = new RecursiveNode($1, $2, RECMETDEC);  
+                  }
+;
+
 statement: name ASSIGNOP expression SEMICO {
                 $$ = new Statement($1, $3, STMNTNAMEEXP);
                 delete $2; delete $4;
@@ -158,42 +186,35 @@ statement: name ASSIGNOP expression SEMICO {
             | block {
                   $$ = new Statement($1, STMNTBLOCK);
                   }
-            | vardec {
+/*            | vardec {
                   $$ = new Statement($1, STMNTVARDEC);
-                  }
+                  }*/
 ;
 
-block:  /*LBRACE vardecr RBRACE{
-              $$ = new Block($2, BLOCKVARDEC);
-              delete $1; delete $3;
-              }*/
-         LBRACE statementr RBRACE {
-              $$ = new Block($2, BLOCKSTMNT);
-              delete $1; delete $3;
-              }
-/*        | LBRACE vardecr statementr RBRACE{
-              $$ = new Block($2, $3, BLOCKVARSTMNT);
-              delete $1; delete $4;
-              }*/
-        | LBRACE RBRACE {
+block:  LBRACE RBRACE{
               $$ = new Block(BLOCKEMPTY);
               delete $1; delete $2;
               }
+        | LBRACE vardecr RBRACE {
+              $$ = new Block($2, BLOCKVARDEC);
+              delete $1; delete $3;
+              }
+        | LBRACE vardecr statementr RBRACE{
+              $$ = new Block($2, $3, BLOCKVARSTMNT);
+              delete $1; delete $4;
+              }
+        | LBRACE statementr RBRACE {
+              $$ = new Block($2, BLOCKSTMNT);
+              delete $1; delete $3;
+              }
         
 ;
-/*vardecr: vardec %prec VARD { $$ = $1; }
-          | vardec vardecr {
-                    $$ = new RecursiveNode($1, $2, RECVARDEC);
-                }
-;*/
 
 statementr: statement { $$ = $1; }
-            | statement statementr {
-/*                   $$ = new StatementR($1, $2); */
+            | statementr statement {
                     $$ = new RecursiveNode($1, $2, RECSTMNT);
                   }
 ;
-
 
 conditionalstatement: IF LPAREN expression RPAREN statement %prec IFEL{
                             $$ = new CondStatement($3, $5, CONDSTMNT);
@@ -211,7 +232,7 @@ constructordec: IDENTIFIER LPAREN paramlist RPAREN block {
                 | IDENTIFIER LPAREN RPAREN block {
                       $$ = new ConstructorDec($1->value, $4, CONSTDECEMPTY);
                       delete $1; delete $2; delete $3;
-                }
+                      }
 ;
 
 methoddec: type IDENTIFIER LPAREN paramlist RPAREN block {
@@ -221,16 +242,16 @@ methoddec: type IDENTIFIER LPAREN paramlist RPAREN block {
           | type IDENTIFIER LPAREN RPAREN block {
                 $$ = new MethodDec($1, $2->value, $5, METHODDECTYPEEMPTY);
                 delete $2; delete $3; delete $4;
-          }
+                }
           | VOID IDENTIFIER LPAREN paramlist RPAREN block {
-            $$ = new MethodDec($2->value, $4, $6, METHODDECVOID);
-            delete $1; delete $2; delete $3; delete $5;
+                $$ = new MethodDec($2->value, $4, $6, METHODDECVOID);
+                delete $1; delete $2; delete $3; delete $5;
             
-          }
+                }
           | VOID IDENTIFIER LPAREN RPAREN block {
-            $$ = new MethodDec($2->value, $5, METHODDECVOIDEMPTY);
-            delete $1; delete $2; delete $3; delete $4;
-          }
+                $$ = new MethodDec($2->value, $5, METHODDECVOIDEMPTY);
+                delete $1; delete $2; delete $3; delete $4;
+                }
 
 ;
 
@@ -238,14 +259,14 @@ paramlist: param { $$ = $1;}
             | param COMMA paramlist {
                   $$ = new ParamList($1, $3);
                   delete $2;
-            }
+                  }
 ;
 
 param: type IDENTIFIER {
             $$ = new Param($1, $2->value);
             delete $2;
             }
-
+;
 vardec: type IDENTIFIER SEMICO {
               $$ = new VarDec($1, $2->value);
               delete $2; delete $3;

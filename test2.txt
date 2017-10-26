@@ -1,7 +1,8 @@
-{
- id (int myparam) {int myvar1;}
- id (int myparam1, mytype[][] myparam2) {x = 5; mytype myvar3;}
- void myfunc(){int x;}
-void myfunc(int p1, typ p2){int x;}
+class myclass1 {
 int z;
+ id (int myparam) {int myvar1;}
+ id (int myparam1, mytype[][] myparam2) {mytype myvar3; x = 5;}
+ void myfunc(){int x;}
+void myfunc(int p1, typ p2){int z;}
+
 }

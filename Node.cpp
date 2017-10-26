@@ -31,7 +31,23 @@ string Node::getType(void) const
   return _type;
 }
 
+/******************************************************************************/
 
+ClassDec::ClassDec(string value, Node* node1):Node(value, "ClassDec")
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+}
+void ClassDec::print(ostream* out)
+{
+  *out << "<ClassDec> --> class ID <ClassBody>" << endl;
+  
+  *out << endl;
+  for(unsigned int i = 0; i < _subNodes.size(); i++)
+  {
+    _subNodes[i]->print(out);
+  }
+}
 
 /******************************************************************************/
 
@@ -44,20 +60,91 @@ ClassBody::ClassBody(Node* node1, int kind):Node("", "ClassBody", kind)
   if(node1->getErr()) _err = true; 
 }
 
+ClassBody::ClassBody(Node* node1, Node* node2, int kind)
+:Node("", "ClassBody", kind)
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true; 
+  
+  _subNodes.push_back(node2);
+  if(node2->getErr()) _err = true; 
+}
+
+ClassBody::ClassBody(Node* node1, Node* node2, Node* node3, int kind)
+:Node("", "ClassBody", kind)
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true; 
+  
+  _subNodes.push_back(node2);
+  if(node2->getErr()) _err = true; 
+  
+  _subNodes.push_back(node3);
+  if(node3->getErr()) _err = true; 
+}
+
 void ClassBody::print(ostream* out)
 {
-  *out << "<ClassBody> --> ";
+  *out << "<ClassBody> --> {";
   
   switch(_kind)
   {
     case CLASSBODYEMPTY:
     {
-      *out << "{}";
       break;
     }
-    case CLASSBODY:
+    case CLASSBODYVAR:
     {
-     *out << "<" << _subNodes[0]->getType() << ">";
+      *out << "<VarDec";
+      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << "> ";
+      break;
+    }
+    case CLASSBODYVARCON:
+    {
+      *out << "<VarDec";
+      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << "> ";
+      
+      *out << "<ConstructorDec";
+      if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << "> ";
+        
+      break;
+    }
+    case CLASSBODYVARCONMET:
+    {
+      *out << "<VarDec";
+      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << "> ";
+      
+      *out << "<ConstructorDec";
+      if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << "> ";
+      
+      *out << "<MethodDec";
+      if(_subNodes[2]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << "> ";
+      
+      break;
+    }
+    case CLASSBODYCONMET:
+    {
+      *out << "<ConstructorDec";
+      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << "> ";
+      
+      *out << "<MethodDec";
+      if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << "> ";
+      
+      break;
+    }
+    case CLASSBODYMET:
+    {
+      *out << "<MethodDec";
+      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << "> ";
       break;
     }
     default:
@@ -67,7 +154,7 @@ void ClassBody::print(ostream* out)
     }
   }
   
-  *out << endl;
+  *out << "}" << endl;
   for(unsigned int i = 0; i < _subNodes.size(); i++)
   {
     _subNodes[i]->print(out);
@@ -147,7 +234,7 @@ void Statement::print(ostream* out)
     }
     case STMNTVARDEC:
     {
-      *out << "<VariableDeclaration>";
+      *out << "<VarDec>";
       break;
     }
     default:
@@ -169,60 +256,53 @@ Block::Block(int kind):Node("", "Block", kind)
 
 Block::Block(Node* node1, int kind):Node("", "Block", kind)
 {
-//   if(node1 != 0) //node1 can be a var dec RecursiveNode which can be empty
-//   {
-    _subNodes.push_back(node1);
-    if(node1->getErr()) _err = true;
-//   }
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
 }
 
-// Block::Block(Node* node1, Node* node2, int kind):Node("", "Block", kind)
-// {
-//   if(node1 != 0) //node1 can be a var dec RecursiveNode which can be empty
-//   {
-//     _subNodes.push_back(node1);
-//     if(node1->getErr()) _err = true;
-//   }
-//   _subNodes.push_back(node2); //node2 cannot be empty
-//   if(node2->getErr()) _err = true;
-// }
+Block::Block(Node* node1, Node* node2, int kind):Node("", "Block", kind)
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+
+  _subNodes.push_back(node2); //node2 cannot be empty
+  if(node2->getErr()) _err = true;
+}
 
 void Block::print(ostream* out)
 {
-  *out << "<Block> --> ";
+  *out << "<Block> --> {";
   switch(_kind)
   {
-//     case BLOCKVARDEC:
-//     {
-//       if (_subNodes[0]->getType() == "RecursiveNode")
-//         *out << "{ <VarDecRecursive> }";
-//       else *out << "{ <VariableDeclaration> }";
-//       break;
-//     }
+    case BLOCKVARDEC:
+    {
+      *out << "<VarDec";
+      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << ">";
+      break;
+    }
     case BLOCKSTMNT:
     {
-      if(_subNodes[0]->getType() == "RecursiveNode")
-        *out << "{ <StatementRecursive> }";
-      else *out << "{ <Statement> }";
+      *out << "<Statement>";
+      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << ">";
       
       break;
     }
-//     case BLOCKVARSTMNT:
-//     {
-//       *out << "{ ";
-//       if (_subNodes[0]->getType() == "RecursiveNode")
-//         *out << "<VarDecRecursive> ";
-//       else *out << "<VariableDeclaration> ";
-//       if(_subNodes[1]->getType() == "RecursiveNode")
-//         *out << "<StatementRecursive> ";
-//       else *out << "<Statement> ";
-//       *out << "}";
-//       
-//       break;
-//     }
+    case BLOCKVARSTMNT:
+    {
+      *out << "<VarDec";
+      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << "> ";
+      
+      *out << "<Statement";
+      if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << ">";
+      
+      break;
+    }
     case BLOCKEMPTY:
     {
-      *out << "{}";
       break;
     }
     default:
@@ -232,7 +312,7 @@ void Block::print(ostream* out)
     }
   }
   
-  *out << endl;
+  *out << "}" << endl;
   for(unsigned int i = 0; i < _subNodes.size(); i++)
   {
     _subNodes[i]->print(out);
@@ -243,30 +323,27 @@ void Block::print(ostream* out)
 RecursiveNode::RecursiveNode(Node* node1, Node* node2, int kind)
 :Node("", "RecursiveNode", kind)
 {
-  _subNodes.push_back(node1); //node1 cannot be empty
+  _subNodes.push_back(node1);
   if(node1->getErr()) _err = true;
-//   if(node2 != 0) //node 2 can be a var dec RecursiveNode which can be empty
-//   {
-    _subNodes.push_back(node2);
-    if(node2->getErr()) _err = true;
-//   }
+  _subNodes.push_back(node2);
+  if(node2->getErr()) _err = true;
 }
 
 void RecursiveNode::print(ostream* out)
 {
   switch(_kind)
   {
-//     case RECVARDEC:
-//     {
-//       *out << "<VarDecRecursive> --> ";
-//       if(_subNodes.size() == 2 )
-//     {
-//       if(_subNodes[1]->getType() == "VarDec")*out << "<VarDec> <VarDec>";
-//       else *out << "<VarDec> <VarDecRecursive>";
-//     }
-//       else *out << "<VarDec>";
-//       break;
-//     }
+    case RECVARDEC:
+    {
+      *out << "<VarDecRecursive> --> ";
+      if(_subNodes.size() == 2 )
+    {
+      if(_subNodes[1]->getType() == "VarDec")*out << "<VarDec> <VarDec>";
+      else *out << "<VarDec> <VarDecRecursive>";
+    }
+      else *out << "<VarDec>";
+      break;
+    }
     case RECSTMNT:
     {
       *out << "<StatementRecursive> --> ";
@@ -279,11 +356,28 @@ void RecursiveNode::print(ostream* out)
       else *out << "<Statement>";
       break;
     }
-    case RECDEC:
+    case RECCONDEC:
     {
-      *out << "<RecursiveNode> --> ";
-      *out << "<"<< _subNodes[0]->getType() << ">" << " <" 
-      << _subNodes[1]->getType() <<  ">";
+      *out << "<ConstructorDecRecursive> --> ";
+      if(_subNodes.size() == 2 ) 
+      {
+        if(_subNodes[1]->getType() == "ConstructorDec") 
+          *out << "<ConstructorDec> <ConstructorDec>";
+        else *out << " <ConstructorDec> <ConstructorDecRecursive>";
+      }
+      else *out << "<ConstructorDec>";
+      break;
+    }
+    case RECMETDEC:
+    {
+      *out << "<MethodDecRecursive> --> ";
+      if(_subNodes.size() == 2 ) 
+      {
+        if(_subNodes[1]->getType() == "MethodDec") 
+          *out << "<MethodDec> <MethodDec>";
+        else *out << " <MethodDec> <MethodDecRecursive>";
+      }
+      else *out << "<MethodDec>";
       break;
     }
     default:

@@ -356,7 +356,6 @@ INVALIDNONWORD [^!=<>+\-*\/;.,{}()% \t\n\[\]&\|]
 
 \/\/.*\n {
   // single line comment
-  setToken(yytext, yylineno, column);
   column+= yyleng;
 }
 
@@ -378,20 +377,17 @@ INVALIDNONWORD [^!=<>+\-*\/;.,{}()% \t\n\[\]&\|]
 
 [ ]+ {
     
-/*     setToken(yytext, yylineno, column); */
     column+= yyleng;
     
 }
 
 (\t)+ {
     
-/*     setToken(yytext, yylineno, column); */
     column+= yyleng*8;
 }
 
 \n {
   
-/*   setToken(yytext, yylineno, column);     */
   column = 1;
   
 }

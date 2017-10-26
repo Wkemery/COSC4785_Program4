@@ -58,10 +58,16 @@ using namespace std;
 #define BLOCKEMPTY 6004
 
 #define RECSTMNT 7002
-#define RECDEC 7003
+#define RECCONDEC 7004
+#define RECVARDEC 7005
+#define RECMETDEC 7006
 
 #define CLASSBODYEMPTY 8001
-#define CLASSBODY 8002
+#define CLASSBODYVAR 8002
+#define CLASSBODYVARCON 8003
+#define CLASSBODYVARCONMET 8004
+#define CLASSBODYCONMET 8005
+#define CLASSBODYMET 8006
 
 #define CONSTDEC 9001
 #define CONSTDECEMPTY 9002
@@ -94,11 +100,20 @@ public:
   string getType(void) const;
 };
 
+class ClassDec : public Node
+{
+public:
+  ClassDec(string value, Node* node1);
+  void print(ostream* out);
+};
+
 class ClassBody : public Node
 {
 public:
   ClassBody(int kind);
   ClassBody(Node* node1, int kind);
+  ClassBody(Node* node1, Node* node2, int kind);
+  ClassBody(Node* node1, Node* node2, Node* node3, int kind);  
   void print(ostream* out);
 };
 
@@ -118,7 +133,7 @@ class Block : public Node
 public:
   Block(int kind);
   Block(Node* node1, int kind);  
-//   Block(Node* node1, Node* node2, int kind); 
+  Block(Node* node1, Node* node2, int kind); 
   void print(ostream* out);
 };
 
