@@ -47,6 +47,8 @@ void ClassDec::print(ostream* out)
   {
     _subNodes[i]->print(out);
   }
+  
+  *out << endl;
 }
 
 /******************************************************************************/
@@ -338,8 +340,9 @@ void RecursiveNode::print(ostream* out)
       *out << "<VarDecRecursive> --> ";
       if(_subNodes.size() == 2 )
     {
-      if(_subNodes[1]->getType() == "VarDec")*out << "<VarDec> <VarDec>";
-      else *out << "<VarDec> <VarDecRecursive>";
+      if(_subNodes[0]->getType() == "RecursiveNode")
+        *out << "<VarDecRecursive> <VarDec>";
+      else *out << "<VarDec> <VarDec>";
     }
       else *out << "<VarDec>";
       break;
@@ -349,9 +352,9 @@ void RecursiveNode::print(ostream* out)
       *out << "<StatementRecursive> --> ";
       if(_subNodes.size() == 2 ) 
       {
-        if(_subNodes[1]->getType() == "Statement") 
-          *out << "<Statement> <Statement>";
-        else *out << " <Statement> <StatementRecursive>";
+        if(_subNodes[0]->getType() == "RecursiveNode") 
+          *out << "<StatementRecursive> <Statement>";
+        else *out << " <Statement> <Statement>";
       }
       else *out << "<Statement>";
       break;
@@ -361,9 +364,9 @@ void RecursiveNode::print(ostream* out)
       *out << "<ConstructorDecRecursive> --> ";
       if(_subNodes.size() == 2 ) 
       {
-        if(_subNodes[1]->getType() == "ConstructorDec") 
-          *out << "<ConstructorDec> <ConstructorDec>";
-        else *out << " <ConstructorDec> <ConstructorDecRecursive>";
+        if(_subNodes[1]->getType() == "RecursiveNode") 
+          *out << "<ConstructorDecRecursive> <ConstructorDec>";
+        else *out << " <ConstructorDec> <ConstructorDec>";
       }
       else *out << "<ConstructorDec>";
       break;
@@ -373,9 +376,9 @@ void RecursiveNode::print(ostream* out)
       *out << "<MethodDecRecursive> --> ";
       if(_subNodes.size() == 2 ) 
       {
-        if(_subNodes[1]->getType() == "MethodDec") 
-          *out << "<MethodDec> <MethodDec>";
-        else *out << " <MethodDec> <MethodDecRecursive>";
+        if(_subNodes[1]->getType() == "RecursiveNode") 
+          *out << "<MethodDecRecursive> <MethodDec>";
+        else *out << " <MethodDec> <MethodDec>";
       }
       else *out << "<MethodDec>";
       break;
@@ -393,7 +396,6 @@ void RecursiveNode::print(ostream* out)
     _subNodes[i]->print(out);
   }
   
-  *out << endl;
 }
 /******************************************************************************/
 
@@ -628,21 +630,21 @@ void Expression::print(ostream* out)
 }
 
 /******************************************************************************/
+BrackExpression::BrackExpression(Node* node1)
+:Node("", "BrackExpression")
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+}
 
 BrackExpression::BrackExpression(Node* expression1, Node* expression2)
 :Node("", "BrackExpression")
 {
-  if(expression1 != 0)
-  {
-    _subNodes.push_back(expression1);
-    if(expression1->getErr()) _err = true;
-  }
-  
-  if(expression2 != 0)
-  {
-    _subNodes.push_back(expression2); 
-    if(expression2->getErr()) _err = true;
-  }
+  _subNodes.push_back(expression1);
+  if(expression1->getErr()) _err = true;
+
+  _subNodes.push_back(expression2); 
+  if(expression2->getErr()) _err = true;
   
 }
 void BrackExpression::reverse()
@@ -710,12 +712,14 @@ ArgList::ArgList(Node* expression1, Node* expression2):Node("", "ArgList")
   _subNodes.push_back(expression1);
   if(expression1->getErr()) _err = true;
   
-  if(expression2 != 0)
-  {
-    _subNodes.push_back(expression2); 
-    if(expression2->getErr()) _err = true;
-  } 
-  
+  _subNodes.push_back(expression2); 
+  if(expression2->getErr()) _err = true;
+}
+
+ArgList::ArgList(Node* node1):Node("", "ArgList")
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
 }
 
 void ArgList::print(ostream* out)
@@ -730,8 +734,7 @@ void ArgList::print(ostream* out)
 }
 /******************************************************************************/
 
-ParamList::ParamList(Node* node1, Node* node2)
-:Node("", "ParamList")
+ParamList::ParamList(Node* node1, Node* node2) :Node("", "ParamList")
 {
   _subNodes.push_back(node1);
   if(node1->getErr()) _err = true;
@@ -740,9 +743,16 @@ ParamList::ParamList(Node* node1, Node* node2)
   if(node2->getErr()) _err = true;
 }
 
+ParamList::ParamList(Node* node1) :Node("", "ParamList")
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+}
+
 void ParamList::print(ostream* out)
 {
-  *out << "<ParamList> --> " << " <Param> " << "<"<< _subNodes[1]->getType() << ">";
+  *out << "<ParamList> --> " << " <Param> ";
+  if(_subNodes.size() > 1) *out << "<ParamList>";
   
   *out << endl;
   for(unsigned int i = 0; i < _subNodes.size(); i++)
@@ -773,29 +783,45 @@ void Param::print(ostream* out)
 }
 /******************************************************************************/
 
+NewExpression::NewExpression(int kind):Node("int", "NewExpression", kind) {}
+NewExpression::NewExpression(string value, int kind)
+:Node(value, "NewExpression", kind) {}
+
+NewExpression::NewExpression(Node* node1, int kind)
+:Node("int", "NewExpression", kind)
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+}
+
+NewExpression::NewExpression(Node* node1, Node* node2, int kind)
+:Node("int", "NewExpression", kind)
+{
+  _subNodes.push_back(node1);
+  if(node1->getErr()) _err = true;
+  
+  _subNodes.push_back(node2);
+  if(node2->getErr()) _err = true;
+}
+
 NewExpression::NewExpression(string simpletype, Node* arglist, int kind)
 :Node(simpletype, "NewExpression", kind)
 {
-  if (arglist!=0 ) _subNodes.push_back(arglist);
+  _subNodes.push_back(arglist);
   if(arglist->getErr()) _err = true;
   
 }
+
 NewExpression::NewExpression(string simpletype, Node* type2, Node* brackexp, int kind)
 :Node(simpletype, "NewExpression", kind)
 {
-  if (type2!=0 ) 
-  {
-    _subNodes.push_back(type2);
-    if(type2->getErr()) _err = true;
-  }
-  
-  if(brackexp != 0)
-  {
-    _subNodes.push_back(brackexp);
-    if(brackexp->getErr()) _err = true;
-  }
-  
+  _subNodes.push_back(type2);
+  if(type2->getErr()) _err = true;
+
+  _subNodes.push_back(brackexp);
+  if(brackexp->getErr()) _err = true;
 }
+
 void NewExpression::print(ostream* out)
 {
   *out << "<NewExpression> --> new " << _value << " ";
@@ -822,8 +848,13 @@ void NewExpression::print(ostream* out)
       *out << "<Multibracks>";
       break;
     }
-    case NEWEXP:
+    case NEWEXPEMPTY:
     {
+      break;
+    }
+    case NEWEXPPAREN:
+    {
+      *out << "()";
       break;
     }
     default:
@@ -832,6 +863,7 @@ void NewExpression::print(ostream* out)
       exit(1);
     }
   }
+  
   *out << endl;
   for(unsigned int i = 0; i < _subNodes.size(); i++)
   {
@@ -986,30 +1018,8 @@ VarDec::VarDec(Node* node1, string value): Node(value, "VarDec")
   if(node1->getErr()) _err = true;
 }
 
-// VarDec::VarDec(string type, string id, Node* bracks):Node(id, "VarDec")
-// {
-//   _type = type;
-//   _subNodes.push_back(bracks);
-//   if(bracks->getErr()) _err = true;
-//   
-// }
-
-// VarDec::VarDec(string type, string id): Node(id, "VarDec")
-// {
-//   _type = type;
-// }
 void VarDec::print(ostream* out)
 {
-//   *out << "<VariableDeclaration> --> ";
-//   if(_subNodes.size() > 0) 
-//   {
-//     *out << "<Multibracks> " << _value << ";" << endl;
-//     _subNodes[0]->print(out);
-//   }
-//   else
-//   {
-//     *out << _type << " " << _value << ";" << endl;
-//   }
   *out << "<VarDec> --> <Type> " << _value << " ;" << endl;
   for(unsigned int i = 0; i < _subNodes.size(); i++)
   {

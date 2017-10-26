@@ -1,8 +1,20 @@
 class myclass1 {
-int z;
- id (int myparam) {int myvar1;}
+ int z;
+ id (int myparam, t[][][] myparam2, t2[] myparam3) {
+  int myvar1;
+ x = new t();
+  x = new int();
+  x = new int;
+  x = new t;
+  x = new t [2+2][5][][];
+  x = new int[2+2][5][][];
+  x = new word [];
+  x = new int [];
+  x = new argw(2+2);
+  x = new a(2+2,+2,new int[], 4, x == x);
+}
  id (int myparam1, mytype[][] myparam2) {mytype myvar3; x = 5;}
  void myfunc(){int x;}
-void myfunc(int p1, typ p2){int z;}
+ void myfunc(int p1, typ p2){int z;}
 
 }

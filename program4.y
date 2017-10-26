@@ -54,7 +54,7 @@ void yyerror(const char *);
 %token<token>IDENTIFIER SEMICO NUM
 
 %type<ttype> expression name multibracks unaryop relationop productop 
-%type<ttype> sumop arglist optExprBrack newexpression classdec vardec statement
+%type<ttype> sumop arglist brackexpression newexpression classdec vardec statement
 %type<ttype> conditionalstatement block statementr classbody vardecr param
 %type<ttype> type methoddec constructordec paramlist constructordecr methoddecr
 
@@ -65,7 +65,7 @@ void yyerror(const char *);
 %destructor {delete($$);} DOUBAND DOUBBAR IDENTIFIER SEMICO NUM
 
 %destructor {delete($$);} expression name multibracks unaryop 
-%destructor {delete($$);} relationop productop sumop arglist optExprBrack 
+%destructor {delete($$);} relationop productop sumop arglist brackexpression 
 %destructor {delete($$);} newexpression classdec conditionalstatement statement
 %destructor {delete($$);} block statementr classbody type vardecr param
 %destructor {delete($$);} methoddec constructordec paramlist constructordecr
@@ -80,8 +80,8 @@ void yyerror(const char *);
 %left PLUS MINUS DOUBBAR BIN
 %left TIMES DIVIDE MOD DOUBAND PRO
 %precedence NEG
-/* %precedence OPTEXP */
 %precedence LBRACK
+/* %precedence BRACKEXP */
 /* %precedence VARD */
 /* %precedence IDENTIFIER */
 /* %precedence LPAREN */
@@ -186,9 +186,6 @@ statement: name ASSIGNOP expression SEMICO {
             | block {
                   $$ = new Statement($1, STMNTBLOCK);
                   }
-/*            | vardec {
-                  $$ = new Statement($1, STMNTVARDEC);
-                  }*/
 ;
 
 block:  LBRACE RBRACE{
@@ -255,7 +252,7 @@ methoddec: type IDENTIFIER LPAREN paramlist RPAREN block {
 
 ;
 
-paramlist: param { $$ = $1;}
+paramlist: param { $$ = new ParamList($1); }
             | param COMMA paramlist {
                   $$ = new ParamList($1, $3);
                   delete $2;
@@ -389,10 +386,7 @@ expression: NUM {
                     delete $1; delete $2;
                     yyerrok;
             }
-            | newexpression { 
-                            if($1!= 0) $$ = new Expression($1, EXPNEW); 
-                            else $$ = 0;
-                            }
+            | newexpression { $$ = new Expression($1, EXPNEW); }
             | name %prec NAME{$$ = new Expression($1, EXPNAME);
                   }
             | name LPAREN arglist RPAREN {
@@ -446,50 +440,66 @@ name: THIS {
 newexpression: NEW IDENTIFIER LPAREN arglist RPAREN {
                     $$ = new NewExpression($2->value, $4, NEWEXPARG);
                     delete $1; delete $2; delete $3; delete $5;
-}
+                    }
+              | NEW IDENTIFIER LPAREN RPAREN { 
+                    $$ = new NewExpression($2->value, NEWEXPPAREN);
+                    delete $1; delete $2; delete $3; delete $4;
+                    }
               | NEW IDENTIFIER LPAREN arglist error {
-                $$ = new ErrNode();
-                cerr << "Expected Right Parenthesis At " << yylval.token->line 
-                << ":" << yylval.token->column << endl << endl;
-                      yyerrok;
-                      delete $1; delete $2; delete $3; delete $4;
-              }
-              | NEW IDENTIFIER optExprBrack {
-                if($3 != 0) ((BrackExpression*)$3)->reverse();
-                if($3 == 0) $$ = new NewExpression($2->value, $3, 0, NEWEXP);
-                else $$ = new NewExpression($2->value, $3, 0, NEWEXPBRACK);
-                delete $1; delete $2;
-              }
-              | NEW IDENTIFIER optExprBrack multibracks {
-                if($3 != 0) ((BrackExpression*)$3)->reverse();
-                if($3 == 0) $$ = new NewExpression($2->value, $3, $4, NEWEXPMULTI);
-                else $$ = new NewExpression($2->value, $3, $4, NEWEXPBRACKMULTI);
-                delete $1; delete $2;
-              }
-              | NEW INT LPAREN arglist RPAREN {
-                    $$ = new NewExpression("int", $4, NEWEXPARG);
-                    delete $1; delete $2; delete $3; delete $5;
-              }
-              | NEW INT LPAREN arglist error {
-                $$ = new ErrNode();
-                cerr << "Expected Right Parenthesis At " << yylval.token->line 
-                << ":" << yylval.token->column <<endl << endl;
-                      yyerrok;
-                      delete $1; delete $2; delete $3; delete $4; 
-              }
-              | NEW INT optExprBrack {
-                    if($3 != 0) ((BrackExpression*)$3)->reverse();
-                    if($3 == 0) $$ =  new NewExpression("int", $3, 0,NEWEXP);
-                    else $$=  new NewExpression("int", $3, 0,NEWEXPBRACK);
+                    $$ = new ErrNode();
+                    cerr << "Expected Right Parenthesis At " << yylval.token->line 
+                    << ":" << yylval.token->column << endl << endl;
+                    yyerrok;
+                    delete $1; delete $2; delete $3; delete $4;
+                    }
+              | NEW IDENTIFIER {
+                    $$ = new NewExpression($2->value, NEWEXPEMPTY);
+                    delete $1; delete $2;
+                    }
+              | NEW IDENTIFIER brackexpression {
+                    $$ = new NewExpression($2->value, $3, NEWEXPBRACK);
                     delete $1; delete $2;
               }
-              | NEW INT optExprBrack multibracks {
-                if($3 != 0) ((BrackExpression*)$3)->reverse();
-                if($3 == 0) $$=  new NewExpression("int", $3, $4, NEWEXPMULTI);
-                else $$ =  new NewExpression("int", $3, $4, NEWEXPBRACKMULTI);
+              | NEW IDENTIFIER multibracks {
+                $$ = new NewExpression($2->value, $3, NEWEXPMULTI);
                 delete $1; delete $2;
               }
-             | NEW error{ 
+              | NEW IDENTIFIER brackexpression multibracks {
+                    $$ = new NewExpression($2->value, $3, $4, NEWEXPBRACKMULTI);
+                    delete $1; delete $2;
+              }
+              | NEW INT LPAREN arglist RPAREN {
+                    $$ = new NewExpression($4, NEWEXPARG);
+                    delete $1; delete $2; delete $3; delete $5;
+              }
+              | NEW INT LPAREN RPAREN {
+                $$ = new NewExpression(NEWEXPPAREN);
+                delete $1; delete $2; delete $3; delete $4;
+              }
+              | NEW INT LPAREN arglist error {
+                    $$ = new ErrNode();
+                    cerr << "Expected Right Parenthesis At " << yylval.token->line 
+                    << ":" << yylval.token->column <<endl << endl;
+                    yyerrok;
+                    delete $1; delete $2; delete $3; delete $4; 
+              }
+              | NEW INT {
+                $$ = new NewExpression(NEWEXPEMPTY);
+                delete $1; delete $2;
+              }
+              | NEW INT brackexpression {
+                    $$ =  new NewExpression($3,NEWEXPBRACK);
+                    delete $1; delete $2;
+              }
+              | NEW INT brackexpression multibracks {
+                $$ =  new NewExpression($3, $4, NEWEXPBRACKMULTI);
+                delete $1; delete $2;
+              }
+              | NEW INT multibracks {
+                $$ = new NewExpression($3, NEWEXPMULTI);
+                delete $1; delete $2;
+              }
+              | NEW error{ 
                   $$ = new ErrNode();
                   cerr << " -> after new at " << $1->line << ":" << $1->column 
                   << endl << endl; 
@@ -498,19 +508,21 @@ newexpression: NEW IDENTIFIER LPAREN arglist RPAREN {
 }
                   
 ;
-optExprBrack: %empty {$$ = 0;}
-              | optExprBrack LBRACK expression RBRACK {
-                    $$ = new BrackExpression($3, $1);
-                    delete $2; delete $4;
+brackexpression: LBRACK expression RBRACK { 
+                      $$ = new BrackExpression($2);
+                      delete $1; delete $3;
+                      }
+                  | brackexpression LBRACK expression RBRACK {
+                  $$ = new BrackExpression($1, $3);
+                  delete $2; delete $4;
               }
 ;
 
-arglist: %empty {$$ = 0;}
-          | expression COMMA arglist { 
+arglist: expression COMMA arglist { 
             $$ = new ArgList($1, $3);
             delete $2;
           }
-          | expression {$$ = new ArgList($1, 0);}
+          | expression {$$ = new ArgList($1);}
 ;
 unaryop:  PLUS {$$ = new UnaryOp("+"); delete $1;}
 | MINUS {$$ = new UnaryOp("-"); delete $1;}

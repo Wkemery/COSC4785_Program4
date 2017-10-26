@@ -38,7 +38,8 @@ using namespace std;
 #define NEWEXPBRACK 3002 /* NewExpression -> */
 #define NEWEXPBRACKMULTI 3003 /* NewExpression -> */
 #define NEWEXPMULTI 3004 /* NewExpression -> */
-#define NEWEXP 3005 /* NewExpression -> */
+#define NEWEXPEMPTY 3005 /* NewExpression -> */
+#define NEWEXPPAREN 3006
 
 #define STMNTNAMEEXP 4001
 #define STMNTNAMEARGL 4002
@@ -137,21 +138,6 @@ public:
   void print(ostream* out);
 };
 
-// class VarDecR : public Node
-// {
-// public:
-//   VarDecR(Node* node1, Node* node2);
-//   void print(ostream* out);
-// };
-// 
-// class StatementR : public Node
-// {
-// public:
-//   StatementR(Node* node1, Node* node2);
-//   void print(ostream* out);
-//   
-// };
-
 class RecursiveNode: public Node
 {
 public:
@@ -194,6 +180,7 @@ private:
   void recReverse(stack<Node*> & expressions);
 public:
   BrackExpression(Node* expression1, Node* expression2);
+  BrackExpression(Node* node1);
   void reverse();
   void print(ostream* out);
 };
@@ -212,6 +199,7 @@ class ArgList : public Node
 private: 
   bool _empty;
 public:
+  ArgList(Node* node1);
   ArgList(Node* expression1, Node* expression2);
   bool getEmpty() const ;
   void print(ostream* out);
@@ -220,6 +208,7 @@ public:
 class ParamList : public Node
 {
 public:
+  ParamList(Node* node1);
   ParamList(Node* node1, Node* node2);
   void print(ostream* out);
 };
@@ -234,6 +223,10 @@ public:
 class NewExpression : public Node
 {
 public:
+  NewExpression(int kind);
+  NewExpression(string value, int kind);
+  NewExpression(Node* node1, int kind);
+  NewExpression(Node* node1, Node* node2, int kind);
   NewExpression(string simpletype, Node* arglist, int kind);
   NewExpression(string simpletype, Node* type2 , Node* brackexp, int kind);
   void print(ostream* out);
@@ -262,14 +255,8 @@ private:
 
 class VarDec: public Node
 {
-private:
-//   string _type;
 public:
   VarDec(Node* node1, string value);
-//   VarDec(string type, string id);
-//   VarDec(string type, string id, Node* bracks);
-//   VarDec(Node* type, string id, Node* bracks);
-//   string getID(void) const;
   void print(ostream* out);
 };
 
@@ -288,13 +275,6 @@ public:
   Multibracks();
   void print(ostream* out);
 };
-
-// class SimpleType: public Node
-// {
-// public:
-//   SimpleType(string value);
-//   void print(ostream* out);
-// };
 
 class UnaryOp : public Node
 {
