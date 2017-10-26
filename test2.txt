@@ -1,20 +1,78 @@
 class myclass1 {
+  //var dec in upper block testing
  int z;
+ 
+ //constructor declaration testing
  id (int myparam, t[][][] myparam2, t2[] myparam3) {
-  int myvar1;
- x = new t();
-  x = new int();
-  x = new int;
-  x = new t;
-  x = new t [2+2][5][][];
-  x = new int[2+2][5][][];
-  x = new word [];
-  x = new int [];
-  x = new argw(2+2);
-  x = new a(2+2,+2,new int[], 4, x == x);
+   //var dec in block testing
+
+
+    
+  //Statement testing
+    //name = exp;
+      //expression testing
+    // name(arglist);
+      //arglist testing
+    // print(arglist);
+      //arglist testing
+    //conditional statement
+      //conditional statement testing
+    // while(expression) statement
+      //expression testing
+      // statement testing
+    // return optionalexpression
+      //test just return;
+      // expression testing
+    //block
+      //statement testing
+    
+      
+  //expression testing
+    //name
+    //number
+    //null
+    //name(arglist)
+    //read
+    //newExpression
+    //unaryop expression
+    //expression relationop expression
+    //expression sump expression
+    // expression productop expression
+    //(expression)
+    
+  //arglist testing
+  //newexpression testing
+  //conditional statement testing
+  //name testing
+
+   
+//  x = new t();
+//   x = new int();
+//   x = new int;
+//   x = new t;
+//   x = new t [2+2][5][][];
+//   x = new int[2+2][5][][];
+//   x = new word [];
+//   x = new int [];
+//   x = new argw(2+2);
+//   x = new a(2+2,+2,new int[], 4, x == x);
+  
 }
  id (int myparam1, mytype[][] myparam2) {mytype myvar3; x = 5;}
  void myfunc(){int x;}
  void myfunc(int p1, typ p2){int z;}
 
 }
+
+/**********************************vardec testing******************************/    
+//ID testing
+mytype myvar1;
+mytype[] myvar2;
+mytype[][] myvar3;
+mytype[][][][][] myvar4;
+//int testing
+int myvar1;
+int[] myvar2;
+int[][] myvar3;
+int[][][][][] myvar4;
+/******************************************************************************/ 

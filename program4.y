@@ -87,8 +87,6 @@ void yyerror(const char *);
 /* %precedence LPAREN */
 
 
-
-
 %% 
 input:  %empty
         | input classdec { 
