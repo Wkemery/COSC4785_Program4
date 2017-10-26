@@ -27,19 +27,7 @@ class myclass1 {
       //statement testing
     
       
-  //expression testing
-    //name
-    //number
-    //null
-    //name(arglist)
-    //read
-    //newExpression
-    //unaryop expression
-    //expression relationop expression
-    //expression sump expression
-    // expression productop expression
-    //(expression)
-    
+   
   //arglist testing
   //newexpression testing
   //conditional statement testing
@@ -63,7 +51,51 @@ class myclass1 {
  void myfunc(int p1, typ p2){int z;}
 
 }
+/********************************expression testing****************************/ 
+  //expression testing
+    //name
+      this
+      nameid
+      id.type
+      this.type.id.id2
+      this.type.id.id2[2]
+      this.type.id.id2[2+2]
+      this.type.id.id2[new int[2+2][5][][]] 
+    //number
+      5
+    //null
+      null
+    //name(arglist)
+      this()
+      nameid()
+      id.type()
+      this.type.id.id2()
+      this.type.id.id2[2]()
+      this.type.id.id2[2+2]()
+      this.type.id.id2[new int[2+2][5][][]]()
+    //read
+      read()
+    //newExpression
+//  new t()
+//  new int()
+//  new int
+//  new t
+//  new t [2+2][5][][]
+//  new int[2+2][5][][]
+//  new word []
+//  new int []
+//  new argw(2+2)
+//  new a(2+2,+2,new int[], 4, x == x)
+    //unaryop expression
++ this.type.id.id2[new int[2+2][5][][]]
+- new a(2+2,+2,new int[], 4, x == x)
+! name arglist as an expression
 
+    //expression relationop expression
+    //expression sump expression
+    // expression productop expression
+    //(expression)
+ 
 /**********************************vardec testing******************************/    
 //ID testing
 mytype myvar1;
@@ -75,4 +107,16 @@ int myvar1;
 int[] myvar2;
 int[][] myvar3;
 int[][][][][] myvar4;
-/******************************************************************************/ 
+/******************************Name Testing************************************/
+this
+nameid
+id.type
+this.type.id.id2
+this.type.id.id2[2]
+this.type.id.id2[2+2]
+this.type.id.id2[new int[2+2][5][][]]
+/******************************************************************************/
+
+/******************************ArgList Testing************************************/
+//expression testing
+//expression , expression testing
