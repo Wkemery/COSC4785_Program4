@@ -149,6 +149,25 @@ void ClassBody::print(ostream* out)
       *out << "> ";
       break;
     }
+    case CLASSBODYCON:
+    {
+      *out << "ConstructorDec";
+      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << "> ";
+      break;
+    }
+    case CLASSBODYVARMET:
+    {
+      *out << "<VarDec";
+      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << "> ";
+      
+      *out << "<MethodDec";
+      if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
+      *out << "> ";
+      
+      break;
+    }
     default:
     {
       cerr << "FATAL ERROR ClassBody" << endl;
@@ -239,6 +258,11 @@ void Statement::print(ostream* out)
       *out << "<VarDec>";
       break;
     }
+    case STMNTSEMI:
+    {
+      *out << ";";
+      break;
+    }
     default:
     {
       cerr << "FATAL ERROR!! Statement" << endl;
@@ -251,6 +275,9 @@ void Statement::print(ostream* out)
     {
       _subNodes[i]->print(out);
     }
+    
+    *out << endl << endl;
+    
 }
 /******************************************************************************/
 Block::Block(int kind):Node("", "Block", kind)
@@ -285,7 +312,7 @@ void Block::print(ostream* out)
     }
     case BLOCKSTMNT:
     {
-      *out << "<Statement>";
+      *out << "<Statement";
       if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
       *out << ">";
       
@@ -395,6 +422,7 @@ void RecursiveNode::print(ostream* out)
   {
     _subNodes[i]->print(out);
   }
+  *out << endl;
   
 }
 /******************************************************************************/
@@ -627,6 +655,8 @@ void Expression::print(ostream* out)
   {
     _subNodes[i]->print(out);
   }
+  
+  *out << endl;
 }
 
 /******************************************************************************/
@@ -840,12 +870,12 @@ void NewExpression::print(ostream* out)
     }
     case NEWEXPBRACKMULTI:
     {
-      *out << "[<BracketedExpression>] <Multibracks>";
+      *out << "[<BracketedExpression>] <RecursiveBrackets>";
       break;
     }
     case NEWEXPMULTI:
     {
-      *out << "<Multibracks>";
+      *out << "<RecursiveBrackets>";
       break;
     }
     case NEWEXPEMPTY:

@@ -130,10 +130,18 @@ classbody:  LBRACE RBRACE {
                   $$ = new ClassBody($2, $3, CLASSBODYCONMET);
                   delete $1; delete $4;
                   }
+            | LBRACE constructordecr RBRACE{
+                  $$ = new ClassBody($2, CLASSBODYCON);
+                  delete $1; delete $3;
+            }
             | LBRACE methoddecr RBRACE{
                   $$ = new ClassBody($2, CLASSBODYMET);
                   delete $1; delete $3;
                   }
+            | LBRACE vardecr methoddecr RBRACE{
+                  $$ = new ClassBody($2, $3, CLASSBODYVARMET);
+                  delete $1; delete $4;
+            }
 ;
 
 vardecr: vardec { $$ = $1; }
@@ -177,6 +185,10 @@ statement: name ASSIGNOP expression SEMICO {
             | RETURN SEMICO {
                   $$ = new Statement(SMTNTRETURN);
                   delete $1; delete $2;
+                  }
+            | SEMICO {
+                  $$ = new Statement(STMNTSEMI);
+                  delete $1;
                   }
             | conditionalstatement {
                   $$ = new Statement($1, STMNTCOND);
@@ -466,14 +478,14 @@ newexpression: NEW IDENTIFIER LPAREN arglist RPAREN {
                     $$ = new NewExpression($2->value, $3, $4, NEWEXPBRACKMULTI);
                     delete $1; delete $2;
               }
-              | NEW INT LPAREN arglist RPAREN {
+/*              | NEW INT LPAREN arglist RPAREN {
                     $$ = new NewExpression($4, NEWEXPARG);
                     delete $1; delete $2; delete $3; delete $5;
-              }
-              | NEW INT LPAREN RPAREN {
+              }*/
+/*              | NEW INT LPAREN RPAREN {
                 $$ = new NewExpression(NEWEXPPAREN);
                 delete $1; delete $2; delete $3; delete $4;
-              }
+              }*/
               | NEW INT LPAREN arglist error {
                     $$ = new ErrNode();
                     cerr << "Expected Right Parenthesis At " << yylval.token->line 

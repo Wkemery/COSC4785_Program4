@@ -6,39 +6,42 @@ class myclass1 {
  mytype myvar;
  
  //constructor declaration testing
- id (int myparam, t[][][] myparam2, t2[] myparam3)
- {
+id (int myparam, t[][][] myparam2, t2[] myparam3)
+{
   while((- new a(2*2,+2,new t, 4, a < b)))
   {
-       if (this.type.id.id2[new int[6 + -5*2/10 ((6+ -5)*2)/10][5][new t [2][]] (this.type.id.id2[new int[2%3][5][][]], - new a(2/3,+2,new int(), 4, x <= x), z))
-       then 
-        {
-        print(this.type[a][b].id.id2[new int[2%3][5][(((6==6)!=(5==5))<=((7<7)<(read()>=null)))][]], - new a(2/3,+2,new int[], 4, z || f), z, 
-        this.type.id.id2[new int[6+7][12][][][]] (this.type.id.id2[new int[4%5][6][][][]], - new a(2/3,+2,new int[], -5, x >= z)));
-        
-        this.type.id.id2[new int[2+2][5][][]] = this.type.id.id2[new int[2+2][5][][]];
-        
-        return (- new a(12*25,!90,new mytype[][][][], -18, y && x));
-        }
+    if (this.type.id.id2[new int[((6+ -5)*2)/10][5][new t [2][]]] ( this.type.id.id2[new int[((6+ -5)*2)/10][5][new t [2][]]], -new a(2/3,+2,new int), 4, a <= d, z))
+    {
+      print( this.type.id.id2[new int[((6+ -5)*2)/10][5][new t [2][]]], -new a(2/3,+2,new int[]), 4, a <= d, z);
+      
+      this.type.id.id2[new int[2+2][5][][]] = this.type.id.id2[new int[2+2][5][][]];
+      
+      return (- new a(12*25,!90,new mytype[][][][], -18, y && x));
+      
+      return;
+      ;
+    }
   }
 }
 
-cons2(){}
+
+cons2(){} cons3(){}
 
 void myfunc(int myparam, t[][][] myparam2, t2[] myparam3)
- {
+{
   while((- new a(2*2,+2,new t, 4, a < b)))
   {
-       if (this.type.id.id2[new int[6 + -5*2/10 ((6+ -5)*2)/10][5][new t [2][]] (this.type.id.id2[new int[2%3][5][][]], - new a(2/3,+2,new int(), 4, x <= x), z))
-       then 
-        {
-        print(this.type[a][b].id.id2[new int[2%3][5][(((6==6)!=(5==5))<=((7<7)<(read()>=null)))][]], - new a(2/3,+2,new int[], 4, z || f), z, 
-        this.type.id.id2[new int[6+7][12][][][]] (this.type.id.id2[new int[4%5][6][][][]], - new a(2/3,+2,new int[], -5, x >= z)));
-        
-        this.type.id.id2[new int[2+2][5][][]] = this.type.id.id2[new int[2+2][5][][]];
-        
-        return (- new a(12*25,!90,new mytype[][][][], -18, y && x));
-        }
+    if (this.type.id.id2[new int[((6+ -5)*2)/10][5][new t [2][]]] ( this.type.id.id2[new int[((6+ -5)*2)/10][5][new t [2][]]], -new a(2/3,+2,new int), 4, a <= d, z))
+    {
+      print( this.type.id.id2[new int[((6+ -5)*2)/10][5][new t [2][]]], -new a(2/3,+2,new int[]), 4, a <= d, z);
+      
+      this.type.id.id2[new int[2+2][5][][]] = this.type.id.id2[new int[2+2][5][][]];
+      
+      return (- new a(12*25,!90,new mytype[][][][], -18, y && x));
+      
+      return;
+      ;
+    }
   }
 }
 
