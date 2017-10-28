@@ -1,31 +1,67 @@
 class myclass1 {
   //var dec in upper block testing
  int z;
+ int[] z;
+ mytype[][][] myarray;
+ mytype myvar;
  
  //constructor declaration testing
- id (int myparam, t[][][] myparam2, t2[] myparam3) {
-   //var dec in block testing
+ id (int myparam, t[][][] myparam2, t2[] myparam3)
+ {
+  while((- new a(2*2,+2,new t, 4, a < b)))
+  {
+       if (this.type.id.id2[new int[6 + -5*2/10 ((6+ -5)*2)/10][5][new t [2][]] (this.type.id.id2[new int[2%3][5][][]], - new a(2/3,+2,new int(), 4, x <= x), z))
+       then 
+        {
+        print(this.type[a][b].id.id2[new int[2%3][5][(((6==6)!=(5==5))<=((7<7)<(read()>=null)))][]], - new a(2/3,+2,new int[], 4, z || f), z, 
+        this.type.id.id2[new int[6+7][12][][][]] (this.type.id.id2[new int[4%5][6][][][]], - new a(2/3,+2,new int[], -5, x >= z)));
+        
+        this.type.id.id2[new int[2+2][5][][]] = this.type.id.id2[new int[2+2][5][][]];
+        
+        return (- new a(12*25,!90,new mytype[][][][], -18, y && x));
+        }
+  }
+}
 
+cons2(){}
 
-    
-  //Statement testing
-    //name = exp;
-      //expression testing
-    // name(arglist);
-      //arglist testing
-    // print(arglist);
-      //arglist testing
-    //conditional statement
-      //conditional statement testing
-    // while(expression) statement
-      //expression testing
-      // statement testing
-    // return optionalexpression
-      //test just return;
-      // expression testing
-    //block
-      //statement testing
-    
+void myfunc(int myparam, t[][][] myparam2, t2[] myparam3)
+ {
+  while((- new a(2*2,+2,new t, 4, a < b)))
+  {
+       if (this.type.id.id2[new int[6 + -5*2/10 ((6+ -5)*2)/10][5][new t [2][]] (this.type.id.id2[new int[2%3][5][][]], - new a(2/3,+2,new int(), 4, x <= x), z))
+       then 
+        {
+        print(this.type[a][b].id.id2[new int[2%3][5][(((6==6)!=(5==5))<=((7<7)<(read()>=null)))][]], - new a(2/3,+2,new int[], 4, z || f), z, 
+        this.type.id.id2[new int[6+7][12][][][]] (this.type.id.id2[new int[4%5][6][][][]], - new a(2/3,+2,new int[], -5, x >= z)));
+        
+        this.type.id.id2[new int[2+2][5][][]] = this.type.id.id2[new int[2+2][5][][]];
+        
+        return (- new a(12*25,!90,new mytype[][][][], -18, y && x));
+        }
+  }
+}
+
+mytype myfunc2() {}
+
+int myfunc3() {}
+   
+// most of it
+{
+  while((- new a(2*2,+2,new t, 4, a < b)))
+  {
+       if (this.type.id.id2[new int[2+2][5][new t [2][]] (this.type.id.id2[new int[2%3][5][][]], - new a(2/3,+2,new int(), 4, x <= x), z))
+       then 
+        {
+        print(this.type.id.id2[new int[2%3][5][][]], - new a(2/3,+2,new int[], 4, z || f), z, 
+        this.type.id.id2[new int[6+7][12][][][]] (this.type.id.id2[new int[4%5][6][][][]], - new a(2/3,+2,new int[], -5, x >= z)));
+        
+        this.type.id.id2[new int[2+2][5][][]] = this.type.id.id2[new int[2+2][5][][]];
+        
+        return (- new a(12*25,!90,new mytype[][][][], -18, y && x));
+        }
+  }
+}
       
    
   //arglist testing
@@ -52,61 +88,56 @@ class myclass1 {
 
 }
 /********************************expression testing****************************/ 
-  //expression testing
-    //name
-      this
-      nameid
-      id.type
-      this.type.id.id2
-      this.type.id.id2[2]
-      this.type.id.id2[2+2]
-      this.type.id.id2[new int[2+2][5][][]] 
-    //number
-      5
-    //null
-      null
-    //name(arglist)
-      this()
-      nameid()
-      id.type()
-      this.type.id.id2()
-      this.type.id.id2[2]()
-      this.type.id.id2[2+2]()
-      this.type.id.id2[new int[2+2][5][][]]()
-    //read
-      read()
-    //newExpression
-//  new t()
-//  new int()
-//  new int
-//  new t
-//  new t [2+2][5][][]
-//  new int[2+2][5][][]
-//  new word []
-//  new int []
-//  new argw(2+2)
-//  new a(2+2,+2,new int[], 4, x == x)
-    //unaryop expression
-+ this.type.id.id2[new int[2+2][5][][]]
-- new a(2+2,+2,new int[], 4, x == x)
-! name arglist as an expression
-
-    //expression relationop expression
-    //expression sump expression
-    // expression productop expression
-    //(expression)
+//expression testing
+//name
+  this
+  nameid
+  id.type
+  this.type.id.id2
+  this.type.id.id2[2]
+  this.type.id.id2[2+2]
+  this.type.id.id2[new int[2+2][5][][]] 
+//number
+  5
+//null
+  null
+//name(arglist)
+  this(this.type.id.id2[new int[2==3][5][][]])
+  nameid()
+  id.type()
+  this.type.id.id2()
+  this.type.id.id2[2]()
+  this.type.id.id2[2+2]()
+  this.type.id.id2[new int[2+2][5][][]] (this.type.id.id2[new int[2%3][5][][]], - new a(2/3,+2,new int[], 4, x == x), z)
+//read
+  read()
+//newExpression
+  new t()
+  new int()
+  new int
+  new t
+  new t [2+2][5][][]
+  new int[2+2][5][][]
+  new word []
+  new int []
+  new argw(2+2)
+  + this.type.id.id2[new int[2!=2][5][][]]
+//unaryop expression
+  - new a(2/2,+2,new int[], 4, x == x)
+  ! name arglist as an expression
+  (- new a(2*2,+2,new int[], 4, x == x))
  
 /**********************************vardec testing******************************/    
 //ID testing
-mytype myvar1;
-mytype[] myvar2;
-mytype[][] myvar3;
-mytype[][][][][] myvar4;
+  mytype myvar1;
+  mytype[] myvar2;
+  mytype[][] myvar3;
+  mytype[][][][][] myvar4;
 //int testing
-int myvar1;
-int[] myvar2;
-int[][] myvar3;
-int[][][][][] myvar4;
+  int myvar1;
+  int[] myvar2;
+  int[][] myvar3;
+  int[][][][][] myvar4;
 /******************************Name Testing************************************/
 this
 nameid
@@ -118,5 +149,6 @@ this.type.id.id2[new int[2+2][5][][]]
 /******************************************************************************/
 
 /******************************ArgList Testing************************************/
-//expression testing
-//expression , expression testing
+this.type.id.id2[new int[2==3][5][][]]
+this.type.id.id2[new int[2%3][5][][]], - new a(2/3,+2,new int[], 4, x == x), z 
+

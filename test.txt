@@ -1,42 +1,65 @@
-int myvar1; int[] myvar2; mytype myvar3; mytype[][] myvar4; mytype[][][] myvar5;
+class myclass1 {
+  //var dec in upper block testing
+ int z;
+ int[] z;
+ mytype[][][] myarray;
+ mytype myvar;
+ 
+ //constructor declaration testing
+ id (int myparam, t[][][] myparam2, t2[] myparam3)
+ {
+  while((- new a(2*2,+2,new t, 4, a < b)))
+  {
+       if (this.type.id.id2[new int[6 + -5*2/10 ((6+ -5)*2)/10][5][new t [2][]] (this.type.id.id2[new int[2%3][5][][]], - new a(2/3,+2,new int(), 4, x <= x), z))
+       then 
+        {
+        print(this.type[a][b].id.id2[new int[2%3][5][(((6==6)!=(5==5))<=((7<7)<(read()>=null)))][]], - new a(2/3,+2,new int[], 4, z || f), z, 
+        this.type.id.id2[new int[6+7][12][][][]] (this.type.id.id2[new int[4%5][6][][][]], - new a(2/3,+2,new int[], -5, x >= z)));
+        
+        this.type.id.id2[new int[2+2][5][][]] = this.type.id.id2[new int[2+2][5][][]];
+        
+        return (- new a(12*25,!90,new mytype[][][][], -18, y && x));
+        }
+  }
+}
 
-6 read() null
+cons2(){}
 
--6 !null +read() !-6 -+!read()
+void myfunc(int myparam, t[][][] myparam2, t2[] myparam3)
+ {
+  while((- new a(2*2,+2,new t, 4, a < b)))
+  {
+       if (this.type.id.id2[new int[6 + -5*2/10 ((6+ -5)*2)/10][5][new t [2][]] (this.type.id.id2[new int[2%3][5][][]], - new a(2/3,+2,new int(), 4, x <= x), z))
+       then 
+        {
+        print(this.type[a][b].id.id2[new int[2%3][5][(((6==6)!=(5==5))<=((7<7)<(read()>=null)))][]], - new a(2/3,+2,new int[], 4, z || f), z, 
+        this.type.id.id2[new int[6+7][12][][][]] (this.type.id.id2[new int[4%5][6][][][]], - new a(2/3,+2,new int[], -5, x >= z)));
+        
+        this.type.id.id2[new int[2+2][5][][]] = this.type.id.id2[new int[2+2][5][][]];
+        
+        return (- new a(12*25,!90,new mytype[][][][], -18, y && x));
+        }
+  }
+}
 
-6==6 null != null read()<=read() 5>=5 4 < 5 5 > 6
-
-(((6==6)!=(5==5))<=((7<7)<(read()>=null)))
-
-6*6 8/8 null%8 read()&&6 ((null*read())&&(8/null))
+mytype myfunc2() {}
 
 
-6 + -5*2/10 ((6+ -5)*2)/10
+}
 
-new mytype (2+2,read()>=null)
+class myclass3{
+ cons2(){}
+cons3(){int myvar;}
 
-new int[3][4][5][][]
+mytype myfunc2(){}
+mytype myfunc3(){mytype[] myvar;}
+}
 
-new mytype
 
-new mytype[][][]
+class myclass4{
 
-name()
+mytype myfunc2(){}
+mytype myfunc3(){mytype[] myvar;}
+}
 
-this.name(2+2,2+4)
-
-(2+2)
-
-name[2+2].thing(2+2)
-
-this.val[g].something.more
-
-name(2+2)
-
-name()
-
-word
-
-new mytype
-
-new int
+class myclass2{}
