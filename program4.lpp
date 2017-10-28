@@ -356,7 +356,7 @@ INVALIDNONWORD [^!=<>+\-*\/;.,{}()% \t\n\[\]&\|]
 
 \/\/.*\n {
   // single line comment
-  column+= yyleng;
+  column = 1;
 }
 
 [0-9]+ {

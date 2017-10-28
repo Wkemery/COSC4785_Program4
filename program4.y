@@ -196,6 +196,18 @@ statement: name ASSIGNOP expression SEMICO {
             | block {
                   $$ = new Statement($1, STMNTBLOCK);
                   }
+            | name ASSIGNOP expression error {
+                  $$ = new ErrNode();
+                  cerr << "Expected semicolon after expression around " << $2->line
+                  << ":" << $2->column << endl << endl;
+                  yyerrok;
+                  delete $1; delete $2; delete $3;
+                }
+/*            | error {
+                  $$ = new ErrNode();
+                  cerr << "Statement Error around " << yylval.token->line << ":" << yyval.token->column << endl << endl;
+                  yyerrok;
+                  }*/
 ;
 
 block:  LBRACE RBRACE{
@@ -214,6 +226,12 @@ block:  LBRACE RBRACE{
               $$ = new Block($2, BLOCKSTMNT);
               delete $1; delete $3;
               }
+/*        | error {
+              $$ = new ErrNode();
+              cerr << "Block Error around " << yylval.token->line << ":" 
+              << yylval.token->column << endl << endl;
+              yyerrok;
+              }*/
         
 ;
 
@@ -278,174 +296,172 @@ vardec: type IDENTIFIER SEMICO {
               $$ = new VarDec($1, $2->value);
               delete $2; delete $3;
               }
-
-/*IDENTIFIER IDENTIFIER SEMICO {
-            $$ = new VarDec($1->value, $2->value);
-            delete $1; delete $2; delete $3;
-            }
-      | IDENTIFIER error SEMICO {
-            $$ = new ErrNode();
-            cerr << "-> before ; at " << $3->line << ":" << $3->column << endl 
-            << endl;
-            yyerrok;
-            delete $1; delete $3;
-            }
-      | IDENTIFIER multibracks IDENTIFIER SEMICO {
-            $$ = new VarDec($1->value, $3->value, $2);
-            delete $1; delete $3; delete $4;
-            }
-      | INT IDENTIFIER SEMICO {
-            $$ = new VarDec("int", $2->value);
-            delete $1; delete $2; delete $3;
-            }
-      | INT error SEMICO {
-            $$ = new ErrNode();
-            cerr << " -> before ; at " << $3->line << ":" << $3->column << endl 
-            << endl;
-            yyerrok;
-            delete $1; delete $3;
-            }
-      | INT multibracks IDENTIFIER SEMICO {
-            $$ = new VarDec("int", $3->value, $2);
-            delete $1; delete $3; delete $4;
-            }
-      | IDENTIFIER IDENTIFIER error {
-            $$ = new ErrNode();
-            cerr << "Expected Semicolon At "<< $2->line 
-            << ":" << $2->column+$2->value.length() 
-            << endl << endl;
-            yyerrok;
-            delete $1; delete $2;
+        | type IDENTIFIER error {
+              $$ = new ErrNode();
+              cerr << "Expected Semicolon At "<< $2->line 
+              << ":" << $2->column+$2->value.length() << endl << endl;
+              yyerrok;
+              delete $1; delete $2;
               }
-      | INT IDENTIFIER error {
-          $$ = new ErrNode();
-          cerr << "Expected Semicolon At "<< $2->line << ":" 
-          << $2->column+$2->value.length() <<endl << endl;
-          yyerrok;
-          delete $1; delete $2;
-          }*/
+        | type error SEMICO {
+              $$ = new ErrNode();
+              cerr << "Expected Identifier before "<< $3->line 
+              << ":" << $3->column << endl << endl;
+              yyerrok;
+              delete $1; delete $3;
+              }
 ;
 expression: NUM { 
-                $$ = new Expression($1->value, EXPNUM);
-                delete $1;
-}
+                  $$ = new Expression($1->value, EXPNUM);
+                  delete $1;
+                  }
             | NULLKEYWORD { 
-                $$ = new Expression("null", EXPNULL); 
-                delete $1;
-            }
+                  $$ = new Expression("null", EXPNULL); 
+                  delete $1;
+                  }
             | READ LPAREN RPAREN { 
-                $$ = new Expression("read", EXPREAD); 
-                delete $1; delete $2; delete $3;
-            }
+                  $$ = new Expression("read", EXPREAD); 
+                  delete $1; delete $2; delete $3;
+                  }
             | READ LPAREN error  {
-                      $$ = new ErrNode();
-                      cerr << "Expected Right Parenthesis At "<< $2->line << ":" 
-                      << $2->column <<endl << endl;
-                      yyerrok;
-                      delete $1; delete $2;
-                     }
+                  $$ = new ErrNode();
+                  cerr << "Expected Right Parenthesis At "<< $2->line << ":" 
+                  << $2->column + 1  <<endl << endl;
+                  yyerrok;
+                  delete $1; delete $2;
+                  }
             | unaryop expression %prec NEG { 
                   $$ = new Expression($1, $2, EXPUNARY); 
                   }
             | unaryop error %prec NEG { 
-                      $$ = new ErrNode();
-                      cerr << "Expected expression after " << yylval.token->line 
-                      << ":" << yylval.token->column << endl << endl;
-                      delete $1;
-                      yyerrok;
-            }
+                  $$ = new ErrNode();
+                  cerr << "Expected expression at " << yylval.token->line 
+                  << ":" << yylval.token->column << endl << endl;
+                  delete $1;
+                  yyclearin;
+                  yyerrok;
+                  }
             | expression relationop expression %prec RE{ 
-                    $$ = new Expression($1, $2, $3, EXPRELATION);  
-                    }
+                  $$ = new Expression($1, $2, $3, EXPRELATION);  
+                  }
             | expression relationop error %prec RE{ 
-                      $$ = new ErrNode();
-                      cerr << "Expected expression after " << yylval.token->line 
-                      << ":" << yylval.token->column << endl << endl;
-                      delete $1; delete $2; 
-                      yyerrok;
-            }
+                  $$ = new ErrNode();
+                  cerr << "Expected expression at " << yylval.token->line 
+                  << ":" << yylval.token->column << endl << endl;
+                  yyclearin;
+                  yyerrok;
+                  delete $1; delete $2; 
+                  
+                  }
             | expression productop expression %prec PRO{
                     $$ = new Expression($1, $2, $3, EXPPRODUCT); 
-            }
+                  }
             | expression productop error %prec RE{ 
-              $$ = new ErrNode();
-              cerr << "Expected expression after " << yylval.token->line 
-              << ":" << yylval.token->column << endl << endl;
-              delete $1; delete $2;
-              yyerrok;
-            }
+                  $$ = new ErrNode();
+                  cerr << "Expected expression at " << yylval.token->line 
+                  << ":" << yylval.token->column << endl << endl;
+                  yyerrok;
+                  yyclearin;
+                  delete $1; delete $2;
+                  }
             | expression sumop expression %prec BIN {
-                    $$ = new Expression($1, $2, $3, EXPSUMOP); 
-            }
+                  $$ = new Expression($1, $2, $3, EXPSUMOP); 
+                  }
             | expression sumop error %prec RE{ 
-              $$ = new ErrNode();
-              cerr << "Expected expression after " << yylval.token->line 
-              << ":" << yylval.token->column << endl << endl;
-              delete $1; delete $2;
-              yyerrok;
-            }
+                  $$ = new ErrNode();
+                  cerr << "Expected expression at " << yylval.token->line 
+                  << ":" << yylval.token->column << endl << endl;
+                  yyerrok;
+                  yyclearin;
+                  delete $1; delete $2;
+                  }
             | LPAREN expression RPAREN { 
                   $$ = new Expression($2, EXPPAREN);
                   delete $1; delete $3;
             }
             | LPAREN expression error { 
-                    $$ = new ErrNode();
-                    cerr << "Expected Right Parenthesis At "
-                    << yylval.token->line << ":" << yylval.token->column 
-                    <<endl << endl;
-                    delete $1; delete $2;
-                    yyerrok;
-            }
+                  $$ = new ErrNode();
+                  cerr << "Expected Right Parenthesis at "
+                  << yylval.token->line << ":" << yylval.token->column 
+                  <<endl << endl;
+                  delete $1; delete $2;
+                  yyerrok;
+                  }
             | newexpression { $$ = new Expression($1, EXPNEW); }
             | name %prec NAME{$$ = new Expression($1, EXPNAME);
                   }
             | name LPAREN arglist RPAREN {
                   $$ = new Expression($1, $3, EXPNAMEARG);
                   delete $2; delete $4;
-            }
+                  }
+            | name LPAREN error RPAREN {
+                  $$ = new ErrNode();
+                  cerr << "Expected ArgList before ')' at "
+                  << $4->line << ":" << $4->column <<endl << endl;
+                  yyclearin;
+                  yyerrok;
+                  delete $1; delete $2; delete $4;
+                  }
             | name LPAREN arglist error {
-                    $$ = new ErrNode();
-                    cerr << "Expected Right Parenthesis At "
-                    << yylval.token->line << ":" << yylval.token->column 
-                    <<endl << endl;
-                    yyerrok;
-                    delete $1; delete $2; delete $3;
-            }
+                  $$ = new ErrNode();
+                  cerr << "Expected Right Parenthesis At "
+                  << yylval.token->line << ":" << yylval.token->column 
+                  <<endl << endl;
+                  yyerrok;
+                  delete $1; delete $2; delete $3;
+                  }
             
 ;
 name: THIS { 
             $$ = new Name("this", NAMETHIS); 
             delete $1;
-}
+            }
       | IDENTIFIER %prec NAME { 
             $$ = new Name($1->value, NAMEID);
             delete $1;
-      }
+            }
       | name DOTOP IDENTIFIER { 
             $$ = new Name($1, $3->value, NAMEDOTID);
             delete $2; delete $3;
-      }
+            }
+      | name DOTOP error{
+            $$ = new ErrNode();
+            cerr << "Expected Identifier After '.' at " << $2->line << ":" 
+            << $2->column + 1<< endl << endl;
+            yyclearin;
+            yyerrok;
+            delete $1; delete $2;
+            }
+      | error DOTOP IDENTIFIER {
+            $$ = new ErrNode();
+            cerr << "Expected name before '.' at " << $2->line << ":" 
+            << $2->column << endl << endl;
+            yyclearin;
+            yyerrok;
+            delete $2; delete $3;
+            }
       | name LBRACK expression RBRACK { 
             $$ = new Name($1, $3, NAMEEXP);
             delete $2; delete $4;
-      }
+            }
       | IDENTIFIER LBRACK expression RBRACK{
-        $$ = new Name($3, $1->value, NAMEIDEXP);
-        delete $1; delete $2; delete $4;
-      }
+            $$ = new Name($3, $1->value, NAMEIDEXP);
+            delete $1; delete $2; delete $4;
+            }
       | IDENTIFIER LBRACK expression error{
-        $$ = new ErrNode();
-        cerr << "Expected Right Bracket At " << yylval.token->line << ":" 
-        << yylval.token->column << endl << endl;
-        delete $1; delete $2; delete $3;
-      }
+            $$ = new ErrNode();
+            cerr << "Expected Right Bracket At " << yylval.token->line << ":" 
+            << yylval.token->column << endl << endl;
+            yyerrok;
+            delete $1; delete $2; delete $3;
+            }
       | name LBRACK expression error { 
             $$ = new ErrNode();
             cerr<< "Expected Right Bracket At " << yylval.token->line << ":"
             << yylval.token->column << endl << endl;
             yyerrok;
             delete $1; delete $2; delete $3;
-      }
+            }
 ;
 newexpression: NEW IDENTIFIER LPAREN arglist RPAREN {
                     $$ = new NewExpression($2->value, $4, NEWEXPARG);
@@ -454,6 +470,13 @@ newexpression: NEW IDENTIFIER LPAREN arglist RPAREN {
               | NEW IDENTIFIER LPAREN RPAREN { 
                     $$ = new NewExpression($2->value, NEWEXPPAREN);
                     delete $1; delete $2; delete $3; delete $4;
+                    }
+              | NEW IDENTIFIER LPAREN error { 
+                    $$ = new ErrNode();
+                    cerr << "Expected Right Parenthesis After '(' at " 
+                    << $3->line << ":" << $3->column << endl << endl;
+                    yyerrok;
+                    delete $1; delete $2; delete $3;
                     }
               | NEW IDENTIFIER LPAREN arglist error {
                     $$ = new ErrNode();
@@ -478,21 +501,6 @@ newexpression: NEW IDENTIFIER LPAREN arglist RPAREN {
                     $$ = new NewExpression($2->value, $3, $4, NEWEXPBRACKMULTI);
                     delete $1; delete $2;
               }
-/*              | NEW INT LPAREN arglist RPAREN {
-                    $$ = new NewExpression($4, NEWEXPARG);
-                    delete $1; delete $2; delete $3; delete $5;
-              }*/
-/*              | NEW INT LPAREN RPAREN {
-                $$ = new NewExpression(NEWEXPPAREN);
-                delete $1; delete $2; delete $3; delete $4;
-              }*/
-              | NEW INT LPAREN arglist error {
-                    $$ = new ErrNode();
-                    cerr << "Expected Right Parenthesis At " << yylval.token->line 
-                    << ":" << yylval.token->column <<endl << endl;
-                    yyerrok;
-                    delete $1; delete $2; delete $3; delete $4; 
-              }
               | NEW INT {
                 $$ = new NewExpression(NEWEXPEMPTY);
                 delete $1; delete $2;
@@ -511,10 +519,10 @@ newexpression: NEW IDENTIFIER LPAREN arglist RPAREN {
               }
               | NEW error{ 
                   $$ = new ErrNode();
-                  cerr << " -> after new at " << $1->line << ":" << $1->column 
-                  << endl << endl; 
+                  cerr << "After 'new' at " << $1->line << ":" 
+                  << $1->column << endl << endl;
                   yyerrok;
-                  delete $1;
+/*                   delete $1; */
 }
                   
 ;
@@ -577,7 +585,35 @@ type: INT {
 ;
 
 multibracks: LBRACK RBRACK {$$ = new Multibracks(); delete $1; delete $2;}
-| multibracks LBRACK RBRACK {$$ = new Multibracks($1); delete $3;delete $2;}
+              | multibracks LBRACK RBRACK {$$ = new Multibracks($1); delete $3;delete $2;}
+              | LBRACK error {
+                    $$ = new ErrNode();
+                    cerr << "Expected Right Bracket at " << yylval.token->line 
+                    << ":" << yylval.token->column <<endl << endl;
+                    yyerrok;
+                    delete $1;
+                    }
+/*              | error RBRACK {
+                    $$ = new ErrNode();
+                    cerr << "Expected left Bracket before " << $2->line 
+                    << ":" << $2->column <<endl << endl;
+                    yyerrok;
+                    delete $2;
+                    }*/
+              | multibracks LBRACK error {
+                    $$ = new ErrNode();
+                    cerr << "Expected Right Bracket at " << yylval.token->line 
+                    << ":" << yylval.token->column <<endl << endl;
+                    yyerrok;
+                    delete $1; delete $2;
+                    }
+/*              | multibracks error RBRACK {
+                    $$ = new ErrNode();
+                    cerr << "Expected left Bracket before " << $3->line 
+                    << ":" << $3->column <<endl << endl;
+                    yyerrok;
+                    delete $1; delete $3;
+                    }*/
 ;
 
 %%

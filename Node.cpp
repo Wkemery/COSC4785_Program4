@@ -99,7 +99,7 @@ void ClassBody::print(ostream* out)
     {
       *out << "<VarDec";
       if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << "> ";
+      *out << ">";
       break;
     }
     case CLASSBODYVARCON:
@@ -110,7 +110,7 @@ void ClassBody::print(ostream* out)
       
       *out << "<ConstructorDec";
       if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << "> ";
+      *out << ">";
         
       break;
     }
@@ -126,7 +126,7 @@ void ClassBody::print(ostream* out)
       
       *out << "<MethodDec";
       if(_subNodes[2]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << "> ";
+      *out << ">";
       
       break;
     }
@@ -138,7 +138,7 @@ void ClassBody::print(ostream* out)
       
       *out << "<MethodDec";
       if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << "> ";
+      *out << ">";
       
       break;
     }
@@ -146,14 +146,14 @@ void ClassBody::print(ostream* out)
     {
       *out << "<MethodDec";
       if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << "> ";
+      *out << ">";
       break;
     }
     case CLASSBODYCON:
     {
       *out << "ConstructorDec";
       if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << "> ";
+      *out << ">";
       break;
     }
     case CLASSBODYVARMET:
@@ -164,7 +164,7 @@ void ClassBody::print(ostream* out)
       
       *out << "<MethodDec";
       if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << "> ";
+      *out << ">";
       
       break;
     }
