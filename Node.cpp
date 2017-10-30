@@ -40,6 +40,8 @@ ClassDec::ClassDec(string value, Node* node1):Node(value, "ClassDec")
 }
 void ClassDec::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<ClassDec> --> class ID <ClassBody>" << endl;
   
   *out << endl;
@@ -59,34 +61,36 @@ ClassBody::ClassBody(int kind):Node("", "ClassBody", kind)
 ClassBody::ClassBody(Node* node1, int kind):Node("", "ClassBody", kind)
 {
   _subNodes.push_back(node1);
-  if(node1->getErr()) _err = true; 
+//   if(node1->getErr()) _err = true; 
 }
 
 ClassBody::ClassBody(Node* node1, Node* node2, int kind)
 :Node("", "ClassBody", kind)
 {
   _subNodes.push_back(node1);
-  if(node1->getErr()) _err = true; 
+//   if(node1->getErr()) _err = true; 
   
   _subNodes.push_back(node2);
-  if(node2->getErr()) _err = true; 
+//   if(node2->getErr()) _err = true; 
 }
 
 ClassBody::ClassBody(Node* node1, Node* node2, Node* node3, int kind)
 :Node("", "ClassBody", kind)
 {
   _subNodes.push_back(node1);
-  if(node1->getErr()) _err = true; 
+//   if(node1->getErr()) _err = true; 
   
   _subNodes.push_back(node2);
-  if(node2->getErr()) _err = true; 
+//   if(node2->getErr()) _err = true; 
   
   _subNodes.push_back(node3);
-  if(node3->getErr()) _err = true; 
+//   if(node3->getErr()) _err = true; 
 }
 
 void ClassBody::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<ClassBody> --> {";
   
   switch(_kind)
@@ -97,18 +101,18 @@ void ClassBody::print(ostream* out)
     }
     case CLASSBODYVAR:
     {
-      *out << "<VarDec";
+      *out << "<" << _subNodes[0]->getType();
       if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
       *out << ">";
       break;
     }
     case CLASSBODYVARCON:
     {
-      *out << "<VarDec";
+      *out << "<" << _subNodes[0]->getType();
       if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
       *out << "> ";
       
-      *out << "<ConstructorDec";
+      *out << "<" << _subNodes[1]->getType();
       if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
       *out << ">";
         
@@ -116,15 +120,15 @@ void ClassBody::print(ostream* out)
     }
     case CLASSBODYVARCONMET:
     {
-      *out << "<VarDec";
+      *out << "<" << _subNodes[0]->getType();
       if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
       *out << "> ";
       
-      *out << "<ConstructorDec";
+      *out << "<" << _subNodes[1]->getType();
       if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
       *out << "> ";
       
-      *out << "<MethodDec";
+      *out << "<" << _subNodes[2]->getType();
       if(_subNodes[2]->getType()== "RecursiveNode") *out << "Recursive";
       *out << ">";
       
@@ -132,11 +136,11 @@ void ClassBody::print(ostream* out)
     }
     case CLASSBODYCONMET:
     {
-      *out << "<ConstructorDec";
+      *out << "<" << _subNodes[0]->getType();
       if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
       *out << "> ";
       
-      *out << "<MethodDec";
+      *out << "<" << _subNodes[1]->getType();
       if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
       *out << ">";
       
@@ -144,25 +148,25 @@ void ClassBody::print(ostream* out)
     }
     case CLASSBODYMET:
     {
-      *out << "<MethodDec";
+      *out << "<" << _subNodes[0]->getType();
       if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
       *out << ">";
       break;
     }
     case CLASSBODYCON:
     {
-      *out << "ConstructorDec";
+      *out << "<" << _subNodes[0]->getType();
       if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
       *out << ">";
       break;
     }
     case CLASSBODYVARMET:
     {
-      *out << "<VarDec";
+      *out << "<" << _subNodes[0]->getType();
       if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
       *out << "> ";
       
-      *out << "<MethodDec";
+      *out << "<" << _subNodes[1]->getType();
       if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
       *out << ">";
       
@@ -209,6 +213,8 @@ Statement::Statement(int kind):Node("", "Statement", kind)
 
 void Statement::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<Statement> --> ";
   switch(_kind)
   {
@@ -280,53 +286,56 @@ void Statement::print(ostream* out)
     
 }
 /******************************************************************************/
+/* Will not discount an entire block due to error value of its children */
 Block::Block(int kind):Node("", "Block", kind)
 {}
 
 Block::Block(Node* node1, int kind):Node("", "Block", kind)
 {
   _subNodes.push_back(node1);
-  if(node1->getErr()) _err = true;
+//   if(node1->getErr()) _err = true;
 }
 
 Block::Block(Node* node1, Node* node2, int kind):Node("", "Block", kind)
 {
   _subNodes.push_back(node1);
-  if(node1->getErr()) _err = true;
+//   if(node1->getErr()) _err = true;
 
-  _subNodes.push_back(node2); //node2 cannot be empty
-  if(node2->getErr()) _err = true;
+  _subNodes.push_back(node2);
+//   if(node2->getErr()) _err = true;
 }
 
 void Block::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<Block> --> {";
   switch(_kind)
   {
     case BLOCKVARDEC:
     {
-      *out << "<VarDec";
-      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << ">";
+      
+      if(_subNodes[0]->getType()== "RecursiveNode") 
+        *out << "<VarDecRecursive>";
+      else *out << " <" << _subNodes[0]->getType() << ">";
       break;
     }
     case BLOCKSTMNT:
     {
-      *out << "<Statement";
-      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << ">";
-      
+      if(_subNodes[0]->getType()== "RecursiveNode") 
+        *out << "<StatementRecursive>";
+      else *out << " <" << _subNodes[0]->getType() << ">";
       break;
     }
     case BLOCKVARSTMNT:
     {
-      *out << "<VarDec";
-      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << "> ";
+      if(_subNodes[0]->getType()== "RecursiveNode") 
+        *out << "<VarDecRecursive>";
+      else *out << "<" << _subNodes[0]->getType() << ">";
       
-      *out << "<Statement";
-      if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << ">";
+      if(_subNodes[1]->getType()== "RecursiveNode") 
+        *out << "<StatementRecursive>";
+      else *out << " <" << _subNodes[0]->getType() << ">";
       
       break;
     }
@@ -348,66 +357,93 @@ void Block::print(ostream* out)
   }
 }
 /******************************************************************************/
-
+/*Don't want to discount entire RecursiveNode tree just because one node is bad, 
+ *so not checking _err values of children'*/
 RecursiveNode::RecursiveNode(Node* node1, Node* node2, int kind)
 :Node("", "RecursiveNode", kind)
 {
   _subNodes.push_back(node1);
-  if(node1->getErr()) _err = true;
+//   if(node1->getErr()) _err = true;
+  /* This is to allow for capturing valid Statements, declarations that are next
+   * to invalid ones.*/
   _subNodes.push_back(node2);
-  if(node2->getErr()) _err = true;
+//   if(node2->getErr()) _err = true;
 }
 
 void RecursiveNode::print(ostream* out)
 {
+  if(_err) return;
+  
   switch(_kind)
   {
     case RECVARDEC:
     {
       *out << "<VarDecRecursive> --> ";
-      if(_subNodes.size() == 2 )
-    {
+//       if(_subNodes.size() == 2 )
+//     {
       if(_subNodes[0]->getType() == "RecursiveNode")
-        *out << "<VarDecRecursive> <VarDec>";
-      else *out << "<VarDec> <VarDec>";
-    }
-      else *out << "<VarDec>";
+        *out << "<VarDecRecursive> ";
+      else *out << "<" << _subNodes[0]->getType() << ">";
+      *out << " <" << _subNodes[1]->getType() << ">";
+//     }
+//       else *out << "<VarDec>";
       break;
     }
     case RECSTMNT:
     {
       *out << "<StatementRecursive> --> ";
-      if(_subNodes.size() == 2 ) 
-      {
+//       if(_subNodes.size() == 2 ) 
+//       {
         if(_subNodes[0]->getType() == "RecursiveNode") 
-          *out << "<StatementRecursive> <Statement>";
-        else *out << " <Statement> <Statement>";
-      }
-      else *out << "<Statement>";
+          *out << "<StatementRecursive> ";
+        else 
+        {
+          if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+          else *out << "<" <<  _subNodes[0]->getType() << "> ";
+        }
+        
+        if(_subNodes[1]->getErr()) *out << "<ErrNode>";
+        else *out << "<" <<  _subNodes[1]->getType() << ">";
+//       }
+//       else *out << "<Statement>";
       break;
     }
     case RECCONDEC:
     {
       *out << "<ConstructorDecRecursive> --> ";
-      if(_subNodes.size() == 2 ) 
-      {
-        if(_subNodes[1]->getType() == "RecursiveNode") 
-          *out << "<ConstructorDecRecursive> <ConstructorDec>";
-        else *out << " <ConstructorDec> <ConstructorDec>";
-      }
-      else *out << "<ConstructorDec>";
+//       if(_subNodes.size() == 2 ) 
+//       {
+        if(_subNodes[0]->getType() == "RecursiveNode") 
+          *out << "<ConstructorDecRecursive> ";
+        else 
+        {
+          if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+          else *out << "<" <<  _subNodes[0]->getType() << "> ";
+        }
+        
+        if(_subNodes[1]->getErr()) *out << "<ErrNode>";
+        else *out << "<" <<  _subNodes[1]->getType() << ">";
+//       }
+//       else *out << "<ConstructorDec>";
       break;
     }
     case RECMETDEC:
     {
       *out << "<MethodDecRecursive> --> ";
-      if(_subNodes.size() == 2 ) 
-      {
-        if(_subNodes[1]->getType() == "RecursiveNode") 
-          *out << "<MethodDecRecursive> <MethodDec>";
-        else *out << " <MethodDec> <MethodDec>";
-      }
-      else *out << "<MethodDec>";
+//       if(_subNodes.size() == 2 ) 
+//       {
+        if(_subNodes[0]->getType() == "RecursiveNode") 
+          *out << "<MethodDecRecursive> ";
+        else 
+        {
+          if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+          else *out << "<" <<  _subNodes[0]->getType() << "> ";
+        }
+        
+        if(_subNodes[1]->getErr()) *out << "<ErrNode>";
+        else *out << "<" <<  _subNodes[1]->getType() << ">";
+//       }
+//       else *out << "<MethodDec>";
       break;
     }
     default:
@@ -452,6 +488,8 @@ CondStatement::CondStatement(Node* node1, Node* node2, Node* node3, int kind)
 
 void CondStatement::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<ConditionalStatement> --> ";
   switch(_kind)
   {
@@ -500,6 +538,8 @@ Name::Name(Node* name, Node* expression, int kind):Node("", "Name", kind)
 
 void Name::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<Name> --> ";
   switch(_kind)
   {  
@@ -559,35 +599,37 @@ Expression::Expression(Node* unaryop, Node* expression, int kind)
   _subNodes.push_back(unaryop);
   if(unaryop->getErr()) _err = true;
   
-  if(expression != 0 ) 
-  {
+//   if(expression != 0 ) 
+//   {
     _subNodes.push_back(expression);
     if(expression->getErr()) _err = true;
-  }
+//   }
   
 }
 
 Expression::Expression(Node* expression1, Node* op, Node* expression2, int kind)
 :Node("", "Expression", kind)
 {
-  if (expression1 != 0)
-  {
+//   if (expression1 != 0)
+//   {
     _subNodes.push_back(expression1);
     if(expression1->getErr()) _err = true;
-  }
+//   }
   
   _subNodes.push_back(op);
   if(op->getErr()) _err = true;
   
-  if (expression2 != 0)
-  {
+//   if (expression2 != 0)
+//   {
     _subNodes.push_back(expression2);
     if(expression2->getErr()) _err = true;
-  }
+//   }
   
 }
 void Expression::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<Expression> --> ";
   switch(_kind)
   {
@@ -703,6 +745,8 @@ void BrackExpression::recAdd(stack<Node*> & expressions)
 }
 void BrackExpression::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<BracketedExpression> --> ";
   if(_subNodes.size() > 1) *out << "<Expression> [<BracketedExpression>]";
   else *out << "<Expression>";
@@ -725,6 +769,8 @@ OptBracket::OptBracket(Node* expression):Node("", "OptBracket")
 }
 void OptBracket::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<ArrayBrackets> --> ";
   if(_subNodes.size() > 0) *out << "<ArrayBrackets>[]";
   else *out << "[]";
@@ -754,6 +800,8 @@ ArgList::ArgList(Node* node1):Node("", "ArgList")
 
 void ArgList::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<ArgList> --> <Expression>";
   if(_subNodes.size() > 1) *out << " <ArgList>";
   *out << endl;
@@ -781,6 +829,8 @@ ParamList::ParamList(Node* node1) :Node("", "ParamList")
 
 void ParamList::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<ParamList> --> " << " <Param> ";
   if(_subNodes.size() > 1) *out << "<ParamList>";
   
@@ -803,6 +853,8 @@ Param::Param(Node* node1, string value)
 
 void Param::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<Param> --> " << " <Type> " << _value;
   
   *out << endl;
@@ -854,6 +906,8 @@ NewExpression::NewExpression(string simpletype, Node* type2, Node* brackexp, int
 
 void NewExpression::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<NewExpression> --> new " << _value << " ";
   
   switch(_kind)
@@ -909,22 +963,24 @@ ConstructorDec::ConstructorDec(string value, Node* node1, Node* node2, int kind)
 :Node(value, "ConstructorDec", kind)
 {
     _subNodes.push_back(node1);
-    if(node1->getErr()) _err = true;
+//     if(node1->getErr()) _err = true;
 
   _subNodes.push_back(node2);
-  if(node2->getErr()) _err = true;
+//   if(node2->getErr()) _err = true;
 }
 
 ConstructorDec::ConstructorDec(string value, Node* node1, int kind)
 :Node(value, "ConstructorDec", kind)
 {
   _subNodes.push_back(node1);
-  if(node1->getErr()) _err = true;
+//   if(node1->getErr()) _err = true;
 }
 
 
 void ConstructorDec::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<ConstructorDec> --> " << _value;
   
   switch(_kind)
@@ -946,7 +1002,8 @@ void ConstructorDec::print(ostream* out)
     }
   }
   
-  *out << " <Block>" << endl;
+  if(_subNodes.size() > 0) 
+    *out << " <" << _subNodes[_subNodes.size() - 1]->getType() << ">" << endl;
   
   for(unsigned int i = 0; i < _subNodes.size(); i++)
   {
@@ -962,46 +1019,48 @@ MethodDec::MethodDec(Node* node1, string value, Node* node2, Node* node3, int ki
 :Node(value, "MethodDec", kind)
 {
   _subNodes.push_back(node1);
-  if(node1->getErr()) _err = true;
+//   if(node1->getErr()) _err = true;
   
   _subNodes.push_back(node2);
-  if(node2->getErr()) _err = true;
+//   if(node2->getErr()) _err = true;
   
   _subNodes.push_back(node3);
-  if(node3->getErr()) _err = true;
+//   if(node3->getErr()) _err = true;
 }
 
 MethodDec::MethodDec(Node* node1, string value, Node* node2, int kind)
 :Node(value, "MethodDec", kind)
 {
   _subNodes.push_back(node1);
-  if(node1->getErr()) _err = true;
+//   if(node1->getErr()) _err = true;
   
   _subNodes.push_back(node2);
-  if(node2->getErr()) _err = true;
+//   if(node2->getErr()) _err = true;
 }
 
 MethodDec::MethodDec(string value, Node* node1, Node* node2, int kind)
 :Node(value, "MethodDec", kind)
 {
   _subNodes.push_back(node1);
-  if(node1->getErr()) _err = true;
+//   if(node1->getErr()) _err = true;
   
   _subNodes.push_back(node2);
-  if(node2->getErr()) _err = true;
+//   if(node2->getErr()) _err = true;
 }
 
 MethodDec::MethodDec(string value, Node* node1, int kind)
 :Node(value, "MethodDec", kind)
 {
   _subNodes.push_back(node1);
-  if(node1->getErr()) _err = true;
+//   if(node1->getErr()) _err = true;
 
 }
 
 
 void MethodDec::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<MethodDec> --> "; 
   switch(_kind)
   {
@@ -1031,7 +1090,8 @@ void MethodDec::print(ostream* out)
       exit(1);
     }
   }
-  *out << " <Block>" << endl;
+  if(_subNodes.size() > 0) 
+    *out << " <" << _subNodes[_subNodes.size() - 1]->getType() << ">" << endl;
   for(unsigned int i = 0; i < _subNodes.size(); i++)
   {
     _subNodes[i]->print(out);
@@ -1050,6 +1110,8 @@ VarDec::VarDec(Node* node1, string value): Node(value, "VarDec")
 
 void VarDec::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<VarDec> --> <Type> " << _value << " ;" << endl;
   for(unsigned int i = 0; i < _subNodes.size(); i++)
   {
@@ -1071,6 +1133,8 @@ Type::Type(string value, Node* node1, int kind):Node(value, "Type", kind)
 
 void Type::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<Type> --> ";
   switch(_kind)
   {
@@ -1111,6 +1175,8 @@ Multibracks::Multibracks():Node("", "Multibracks")
 
 void Multibracks::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<RecursiveBrackets> --> ";
   if(_subNodes.size() > 0) *out << "<RecursiveBrackets>[]";
   else *out << " []";
@@ -1125,6 +1191,8 @@ UnaryOp::UnaryOp(string value):Node(value, "UnaryOp")
 {}
 void UnaryOp::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<UnaryOp> --> " << _value << endl;
 }
 
@@ -1135,6 +1203,8 @@ RelationOp::RelationOp(string value):Node(value, "RelationOp")
 {}
 void RelationOp::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<RelationOp> --> " << _value << endl;
 }
 
@@ -1144,6 +1214,8 @@ ProductOp::ProductOp(string value):Node(value, "ProductOp")
 {}
 void ProductOp::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<ProductOp> --> " << _value << endl;
 }
 
@@ -1153,16 +1225,19 @@ SumOp::SumOp(string value):Node(value, "SumOp")
 {}
 void SumOp::print(ostream* out)
 {
+  if(_err) return;
+  
   *out << "<SumOp> --> " << _value << endl;
 }
 
 /******************************************************************************/
-ErrNode::ErrNode()
+ErrNode::ErrNode():Node("", "ErrNode")
 {
   _err = true;
 }
 void ErrNode::print(ostream* out)
 {
+  return;
   cerr << "Tried to print an ErrNdoe!" << endl;
   exit(1);
 }

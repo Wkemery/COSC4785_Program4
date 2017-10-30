@@ -56,22 +56,57 @@
 // 
 // }
 
-class newexpression{
-  //new expression errors
-  id()
-  {
-    name = new id( xy;
-    name = new id (2+2;
-    name = new 0;
-    name = new;
-    name = new
-    name = new int [2+2][2+5;
-    name = new id[2+5;
-    name = new id[else];
-    name = new id[2+2][else];
-    name =
+// class newexpression{
+//   //new expression errors
+//   id()
+//   {
+//     name = new id( xy;
+//     name = new id (2+2;
+//     name = new 0;
+//     name = new;
+//     name = new
+//     name = new int [2+2][2+5;
+//     name = new id[2+5;
+//     name = new id[else];
+//     name = new id[2+2][else];
+//     name =
+//   }
+//   
+// }
+
+class recrepeat{
+  //badvariable declaration followed by valid stuff.
+
+//   mytype myvar2;
+//   
+//   mytype mvvar3;
+//   
+//   mytype myvar4;
+//   int myvar
+  
+  id(){}
+  id(){
+    x = y
+    x = y;
+    z = z;
   }
   
+  id(param param1){}
+  void method(){
+    name = 10;
+    name = new;
+    z = x;
+    name = new int [2+2][2+5;
+    return;
+    
+  }
+  void method2(){}
+  type  method3(param param1){
+    int myvar2
+    int myvar3;
+    int myvar4
+    name = 10;
+    z = x
+    y = 10;
+  }
 }
-
-class {}
