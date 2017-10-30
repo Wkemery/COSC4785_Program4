@@ -60,9 +60,18 @@ class newexpression{
   //new expression errors
   id()
   {
-    name = new id(;
+    name = new id( xy;
     name = new id (2+2;
-    name = new 
+    name = new 0;
+    name = new;
+    name = new
+    name = new int [2+2][2+5;
+    name = new id[2+5;
+    name = new id[else];
+    name = new id[2+2][else];
+    name =
   }
   
 }
+
+class {}

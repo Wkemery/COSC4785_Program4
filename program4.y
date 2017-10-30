@@ -51,12 +51,13 @@ void yyerror(const char *);
 
 %token<token>TIMES DIVIDE MOD DOUBAND DOUBBAR
 
-%token<token>IDENTIFIER SEMICO NUM
+%token<token>IDENTIFIER SEMICO NUM 
 
 %type<ttype> expression name multibracks unaryop relationop productop 
 %type<ttype> sumop arglist brackexpression newexpression classdec vardec statement
 %type<ttype> conditionalstatement block statementr classbody vardecr param
 %type<ttype> type methoddec constructordec paramlist constructordecr methoddecr
+
 
 %destructor {delete($$);} CLASS THIS IF ELSE WHILE RETURN PRINT READ VOID NEW 
 %destructor {delete($$);} NULLKEYWORD INT ASSIGNOP DOTOP COMMA LPAREN RPAREN 
@@ -70,6 +71,9 @@ void yyerror(const char *);
 %destructor {delete($$);} block statementr classbody type vardecr param
 %destructor {delete($$);} methoddec constructordec paramlist constructordecr
 %destructor {delete($$);} methoddecr
+
+/*%precedence MULTIBRACKERR
+%precedence RBRACK*/
 
 %precedence IFEL
 %precedence ELSE
@@ -198,10 +202,17 @@ statement: name ASSIGNOP expression SEMICO {
                   }
             | name ASSIGNOP expression error {
                   $$ = new ErrNode();
-                  cerr << "Expected semicolon after expression around " << $2->line
-                  << ":" << $2->column << endl << endl;
+                  cerr << "Expected semicolon after expression around " << yylval.token->line
+                  << ":" << yylval.token->column << endl << endl;
                   yyerrok;
                   delete $1; delete $2; delete $3;
+                }
+            | name ASSIGNOP error {
+                  $$ = new ErrNode();
+                  cerr << "Expected fucked up statement " << yylval.token->line
+                  << ":" << yylval.token->column << endl << endl;
+                  yyerrok;
+                  delete $1; delete $2; //delete $3;
                 }
 /*            | error {
                   $$ = new ErrNode();
@@ -238,6 +249,20 @@ block:  LBRACE RBRACE{
 statementr: statement { $$ = $1; }
             | statementr statement {
                     $$ = new RecursiveNode($1, $2, RECSTMNT);
+                  }
+/*            | error {
+                  $$ = new ErrNode();
+                  cerr << "Incomplete Statement around1 " << yylval.token->line << ":" 
+                  << yylval.token->column << endl << endl;
+                  yyerrok;
+                  }*/
+            | statementr error {
+                  $$ = new ErrNode();
+                  cerr << "Incomplete Statement around " << yylval.token->line << ":" 
+                  << yylval.token->column << endl << endl;
+                  yyerrok;
+                  yyclearin;
+                  delete $1;
                   }
 ;
 
@@ -284,6 +309,10 @@ paramlist: param { $$ = new ParamList($1); }
             | param COMMA paramlist {
                   $$ = new ParamList($1, $3);
                   delete $2;
+                  }
+            | error {
+                  $$ = new ErrNode();
+/*                   delete $1; */
                   }
 ;
 
@@ -410,6 +439,11 @@ expression: NUM {
                   yyerrok;
                   delete $1; delete $2; delete $3;
                   }
+/*            | error {
+                  $$ = new ErrNode();
+                  cerr << "Expression Error around " << yylval.token->line << ":" << yyval.token->column << endl << endl;
+                  yyerrok;
+                  }*/
             
 ;
 name: THIS { 
@@ -520,20 +554,52 @@ newexpression: NEW IDENTIFIER LPAREN arglist RPAREN {
               | NEW error{ 
                   $$ = new ErrNode();
                   cerr << "After 'new' at " << $1->line << ":" 
-                  << $1->column << endl << endl;
+                  << $1->column + 3 << endl << endl;
                   yyerrok;
-/*                   delete $1; */
+                  delete $1;
 }
                   
 ;
 brackexpression: LBRACK expression RBRACK { 
-                      $$ = new BrackExpression($2);
-                      delete $1; delete $3;
-                      }
+                        $$ = new BrackExpression($2);
+                        delete $1; delete $3;
+                        }
                   | brackexpression LBRACK expression RBRACK {
-                  $$ = new BrackExpression($1, $3);
-                  delete $2; delete $4;
-              }
+                        $$ = new BrackExpression($1, $3);
+                        delete $2; delete $4;
+                        }
+                  | LBRACK expression error {
+                        $$ = new ErrNode();
+                        cerr << "Expected right Bracket at " 
+                        << yylval.token->line << ":" << yylval.token->column 
+                        << endl << endl;
+                        yyerrok;
+                        delete $1; delete $2;
+                        }
+                  | brackexpression LBRACK expression error {
+                        $$ = new ErrNode();
+                        cerr << "Expected right Bracket at " 
+                        << yylval.token->line << ":" << yylval.token->column 
+                        << endl << endl;
+                        yyerrok;
+                        delete $1; delete $2; delete $3;
+                        }
+/*                  | brackexpression LBRACK error RBRACK {
+                        $$ = new ErrNode();
+                        cerr << "Expected Expression before ']' at " 
+                        << $4->line << ":" << $4->column 
+                        << endl << endl;
+                        yyerrok;
+                        delete $1; delete $2; delete $4;
+                        }
+                  | LBRACK error RBRACK {
+                        $$ = new ErrNode();
+                        cerr << "Expected Expression before ']' at " 
+                        << $3->line << ":" << $3->column 
+                        << endl << endl;
+                        yyerrok;
+                        delete $1; delete $3;
+                        }*/
 ;
 
 arglist: expression COMMA arglist { 
@@ -586,7 +652,7 @@ type: INT {
 
 multibracks: LBRACK RBRACK {$$ = new Multibracks(); delete $1; delete $2;}
               | multibracks LBRACK RBRACK {$$ = new Multibracks($1); delete $3;delete $2;}
-              | LBRACK error {
+              | LBRACK error /*%prec MULTIBRACKERR*/{
                     $$ = new ErrNode();
                     cerr << "Expected Right Bracket at " << yylval.token->line 
                     << ":" << yylval.token->column <<endl << endl;
