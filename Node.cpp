@@ -101,74 +101,74 @@ void ClassBody::print(ostream* out)
     }
     case CLASSBODYVAR:
     {
-      *out << "<" << _subNodes[0]->getType();
-      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << ">";
+      if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+      else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<VarDecRecursive>";
+      else *out << "<" << _subNodes[0]->getType() << ">";
       break;
     }
     case CLASSBODYVARCON:
     {
-      *out << "<" << _subNodes[0]->getType();
-      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << "> ";
+      if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
+      else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<VarDecRecursive> ";
+      else *out << "<" << _subNodes[0]->getType() << "> ";
       
-      *out << "<" << _subNodes[1]->getType();
-      if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << ">";
-        
+      if(_subNodes[1]->getErr()) *out << "<ErrNode>";
+      else if(_subNodes[1]->getType()== "RecursiveNode") *out << "<ConstructorDecRecursive>";
+      else *out << "<" << _subNodes[1]->getType() << ">";
+      
       break;
     }
     case CLASSBODYVARCONMET:
     {
-      *out << "<" << _subNodes[0]->getType();
-      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << "> ";
+      if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
+      else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<VarDecRecursive> ";
+      else *out << "<" << _subNodes[0]->getType() << "> ";
       
-      *out << "<" << _subNodes[1]->getType();
-      if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << "> ";
+      if(_subNodes[1]->getErr()) *out << "<ErrNode> ";
+      else if(_subNodes[1]->getType()== "RecursiveNode") *out << "<ConstructorDecRecursive> ";
+      else *out << "<" << _subNodes[1]->getType() << "> ";
       
-      *out << "<" << _subNodes[2]->getType();
-      if(_subNodes[2]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << ">";
+      if(_subNodes[2]->getErr()) *out << "<ErrNode>";
+      else if(_subNodes[2]->getType()== "RecursiveNode") *out << "<MethodDecRecursive>";
+      else *out << "<" << _subNodes[2]->getType() << ">";
       
       break;
     }
     case CLASSBODYCONMET:
     {
-      *out << "<" << _subNodes[0]->getType();
-      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << "> ";
+      if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
+      else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<ConstructorDecRecursive> ";
+      else *out << "<" << _subNodes[0]->getType() << "> ";
       
-      *out << "<" << _subNodes[1]->getType();
-      if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << ">";
+      if(_subNodes[1]->getErr()) *out << "<ErrNode>";
+      else if(_subNodes[1]->getType()== "RecursiveNode") *out << "<MethodDecRecursive>";
+      else *out << "<" << _subNodes[1]->getType() << ">";
       
       break;
     }
     case CLASSBODYMET:
     {
-      *out << "<" << _subNodes[0]->getType();
-      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << ">";
+      if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+      else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<MethodDecRecursive>";
+      else *out << "<" << _subNodes[0]->getType() << ">";
       break;
     }
     case CLASSBODYCON:
     {
-      *out << "<" << _subNodes[0]->getType();
-      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << ">";
+      if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+      else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<ConstructorDecRecursive>";
+      else *out << "<" << _subNodes[0]->getType() << ">";
       break;
     }
     case CLASSBODYVARMET:
     {
-      *out << "<" << _subNodes[0]->getType();
-      if(_subNodes[0]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << "> ";
+      if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
+      else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<VarDecRecursive>";
+      else *out << "<" << _subNodes[0]->getType() << "> ";
       
-      *out << "<" << _subNodes[1]->getType();
-      if(_subNodes[1]->getType()== "RecursiveNode") *out << "Recursive";
-      *out << ">";
+      if(_subNodes[1]->getErr()) *out << "<ErrNode>";
+      else if(_subNodes[1]->getType()== "RecursiveNode") *out << "<MethodDecRecursive>";
+      else *out << "<" << _subNodes[1]->getType() << ">";
       
       break;
     }
@@ -314,28 +314,43 @@ void Block::print(ostream* out)
   {
     case BLOCKVARDEC:
     {
-      
-      if(_subNodes[0]->getType()== "RecursiveNode") 
+      if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+      else if(_subNodes[0]->getType()== "RecursiveNode") 
         *out << "<VarDecRecursive>";
       else *out << " <" << _subNodes[0]->getType() << ">";
       break;
     }
     case BLOCKSTMNT:
     {
-      if(_subNodes[0]->getType()== "RecursiveNode") 
+      if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+      else if(_subNodes[0]->getType()== "RecursiveNode") 
         *out << "<StatementRecursive>";
-      else *out << " <" << _subNodes[0]->getType() << ">";
+      else 
+      {
+        if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+        else *out << "<" <<  _subNodes[0]->getType() << ">";
+      }
       break;
     }
     case BLOCKVARSTMNT:
     {
-      if(_subNodes[0]->getType()== "RecursiveNode") 
+      if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
+      else if(_subNodes[0]->getType()== "RecursiveNode") 
         *out << "<VarDecRecursive>";
-      else *out << "<" << _subNodes[0]->getType() << ">";
+      else 
+      {
+        if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+        else *out << "<" <<  _subNodes[0]->getType() << "> ";
+      }
       
-      if(_subNodes[1]->getType()== "RecursiveNode") 
+      if(_subNodes[1]->getErr()) *out << "<ErrNode>";
+      else if(_subNodes[1]->getType()== "RecursiveNode") 
         *out << "<StatementRecursive>";
-      else *out << " <" << _subNodes[0]->getType() << ">";
+      else 
+      {
+        if(_subNodes[1]->getErr()) *out << "<ErrNode>";
+        else *out << "<" <<  _subNodes[1]->getType() << ">";
+      }
       
       break;
     }
@@ -358,16 +373,14 @@ void Block::print(ostream* out)
 }
 /******************************************************************************/
 /*Don't want to discount entire RecursiveNode tree just because one node is bad, 
- *so not checking _err values of children'*/
+ * but We do want an entire Recursive node to be bad if both of its children are mitakes*/
 RecursiveNode::RecursiveNode(Node* node1, Node* node2, int kind)
 :Node("", "RecursiveNode", kind)
 {
   _subNodes.push_back(node1);
-//   if(node1->getErr()) _err = true;
-  /* This is to allow for capturing valid Statements, declarations that are next
-   * to invalid ones.*/
   _subNodes.push_back(node2);
-//   if(node2->getErr()) _err = true;
+  
+  if(node1->getErr() && node2->getErr()) _err = true;
 }
 
 void RecursiveNode::print(ostream* out)

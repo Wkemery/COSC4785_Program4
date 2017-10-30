@@ -94,11 +94,8 @@ void yyerror(const char *);
 %% 
 input:  %empty
         | input classdec { 
-          if($2!=0) 
-          {
             if(!$2->getErr()) forest.push_back($2);
             else delete $2;
-          }
         }
         | error{
           cerr << "Got no idea Around " << yylval.token->line << ":" 
