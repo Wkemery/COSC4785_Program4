@@ -135,6 +135,12 @@ classbody:  LBRACE RBRACE {
                   $$ = new ClassBody($2, CLASSBODYCON);
                   delete $1; delete $3;
             }
+            | LBRACE constructordecr error{
+                  $$ = new ErrNode();
+                  cerr << "Missing right brace around " << yylval.token->line
+                  << ":" << yylval.token->column << endl << endl;
+                  delete $1; delete $2;
+            }
             | LBRACE methoddecr RBRACE{
                   $$ = new ClassBody($2, CLASSBODYMET);
                   delete $1; delete $3;
@@ -206,7 +212,7 @@ statement: name ASSIGNOP expression SEMICO {
                 }
             | name ASSIGNOP error {
                   $$ = new ErrNode();
-                  cerr << "Expected fucked up statement " << yylval.token->line
+                  cerr << "Expected semicolon before " << yylval.token->line
                   << ":" << yylval.token->column << endl << endl;
                   yyerrok;
                   delete $1; delete $2; //delete $3;
@@ -234,6 +240,21 @@ block:  LBRACE RBRACE{
               $$ = new Block($2, BLOCKSTMNT);
               delete $1; delete $3;
               }
+        | LBRACE vardecr error {
+            $$ = new ErrNode();
+            cerr << "Expected right bracket at " << yylval.token->line
+            << ":" << yylval.token->column << endl << endl;
+            yyerrok;
+            delete $1; delete $2;
+        }
+        | LBRACE error {
+            $$ = new ErrNode();
+            cerr << "Expected right bracket at " << $1->line
+            << ":" << $1->column << endl << endl;
+            yyerrok;
+            delete $1;
+          
+        }
 /*        | error {
               $$ = new ErrNode();
               cerr << "Block Error around " << yylval.token->line << ":" 
@@ -280,6 +301,20 @@ constructordec: IDENTIFIER LPAREN paramlist RPAREN block {
                       $$ = new ConstructorDec($1->value, $4, CONSTDECEMPTY);
                       delete $1; delete $2; delete $3;
                       }
+                | IDENTIFIER LPAREN paramlist RPAREN error {
+                      $$ = new ErrNode();
+                      cerr << "Expected block after " << $4->line << ":" 
+                      << $4->column << endl << endl;
+                      yyerrok;
+                      delete $1; delete $2; delete $3; delete $4;
+                      }
+                | IDENTIFIER LPAREN RPAREN error {
+                      $$ = new ErrNode();
+                      cerr << "Expected block after " << $3->line << ":" 
+                      << $3->column << endl << endl;
+                      yyerrok;
+                      delete $1; delete $2; delete $3;
+                      }
 ;
 
 methoddec: type IDENTIFIER LPAREN paramlist RPAREN block {
@@ -307,10 +342,10 @@ paramlist: param { $$ = new ParamList($1); }
                   $$ = new ParamList($1, $3);
                   delete $2;
                   }
-            | error {
+/*            | error {
                   $$ = new ErrNode();
-/*                   delete $1; */
-                  }
+                  delete $1; 
+                  }*/
 ;
 
 param: type IDENTIFIER {
@@ -336,6 +371,13 @@ vardec: type IDENTIFIER SEMICO {
               yyerrok;
               delete $1; delete $3;
               }
+/*        | type error {
+              $$ = new ErrNode();
+              cerr << "Expected Identifier around "<< yylval.token->line 
+              << ":" << yylval.token->column << endl << endl;
+              yyerrok;
+              delete $1;
+              }*/
 ;
 expression: NUM { 
                   $$ = new Expression($1->value, EXPNUM);
@@ -588,8 +630,8 @@ brackexpression: LBRACK expression RBRACK {
                         << endl << endl;
                         yyerrok;
                         delete $1; delete $2; delete $4;
-                        }
-                  | LBRACK error RBRACK {
+                        }*/
+/*                  | LBRACK error RBRACK {
                         $$ = new ErrNode();
                         cerr << "Expected Expression before ']' at " 
                         << $3->line << ":" << $3->column 
