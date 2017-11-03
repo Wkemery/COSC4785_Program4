@@ -152,9 +152,15 @@ classbody:  LBRACE RBRACE {
             }
 ;
 
-vardecr: vardec { $$ = $1; }
+vardecr: vardec { 
+              //$$ = $1; 
+              $$ = new RNode(RECVARDEC);
+              ((RNode*)$$)->add($1);
+}
           | vardecr vardec {
-                $$ = new RecursiveNode($1, $2, RECVARDEC);  
+                //$$ = new RecursiveNode($1, $2, RECVARDEC);  
+                ((RNode*)$1)->add($2);
+                $$ = $1;
                 }
           | vardecr error {
                   $$ = new ErrNode();  
@@ -166,9 +172,15 @@ vardecr: vardec { $$ = $1; }
                 }
 ;
 
-constructordecr: constructordec { $$ = $1; }
+constructordecr: constructordec { 
+                        $$ = new RNode(RECCONDEC);
+                        ((RNode*)$$)->add($1);
+/*                         $$ = $1;  */
+                        }
                   | constructordecr constructordec {
-                        $$ = new RecursiveNode($1, $2, RECCONDEC);  
+/*                         $$ = new RecursiveNode($1, $2, RECCONDEC);   */
+                        ((RNode*)$1)->add($2);
+                        $$ = $1;
                         }
                   | constructordecr error {
                         $$ = new ErrNode();  
@@ -180,9 +192,15 @@ constructordecr: constructordec { $$ = $1; }
                         }
 ;
 
-methoddecr: methoddec { $$ = $1; }
+methoddecr: methoddec { 
+/*   $$ = $1;  */
+                  $$ = new RNode(RECMETDEC);
+                  ((RNode*)$$)->add($1);
+}
             | methoddecr methoddec {
-                  $$ = new RecursiveNode($1, $2, RECMETDEC);  
+/*                   $$ = new RecursiveNode($1, $2, RECMETDEC);   */
+                  ((RNode*)$1)->add($2);
+                  $$ = $1;
                   }
             | methoddecr error {
                   $$ = new ErrNode();  
@@ -289,9 +307,15 @@ block:  LBRACE RBRACE{
         
 ;
 
-statementr: statement { $$ = $1; }
+statementr: statement { 
+/*   $$ = $1;  */
+                  $$ = new RNode(RECSTMNT);
+                  ((RNode*)$$)->add($1);
+                  }
             | statementr statement {
-                    $$ = new RecursiveNode($1, $2, RECSTMNT);
+/*                     $$ = new RecursiveNode($1, $2, RECSTMNT); */
+                  ((RNode*)$1)->add($2);
+                  $$ = $1;
                   }
 /*            | error {
                   $$ = new ErrNode();

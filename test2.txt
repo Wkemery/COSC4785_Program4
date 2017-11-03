@@ -74,42 +74,42 @@
 //   
 // }
 // 
-// class recrepeat{
-// //   badvariable declaration followed by valid stuff.
-// 
-//   mytype myvar2;
-//   
-//   mytype mvvar3;
-//   
-//   mytype myvar4;
-//   int myvar
-//   
-//   id(){}
-//   id(){
-//     x = y
-//     x = y;
-//     z = z;
-//   }
-//   
-//   id(param param1){}
-//   void method(){
-//     name = 10;
-//     name = new;
-//     z = x;
-//     name = new int [2+2][2+5;
-//     return;
-//     
-//   }
-//   void method2(){}
-//   type  method3(param param1){
-//     int myvar2
-//     int myvar3;
-//     int myvar4
-//     name = 10;
-//     z = x
-//     y = 10;
-//   }
-// }
+class recrepeat{
+//   badvariable declaration followed by valid stuff.
+
+  mytype myvar2;
+  
+  mytype mvvar3;
+  
+  mytype myvar4;
+  int myvar
+  
+  id(){}
+  id(){
+    x = y
+    x = y;
+    z = z;
+  }
+  
+  id(param param1){}
+  void method(){
+    name = 10;
+    name = new;
+    z = x;
+    name = new int [2+2][2+5;
+    return;
+    
+  }
+  void method2(){}
+  type  method3(param param1){
+    int myvar2
+    int myvar3;
+    int myvar4
+    name = 10;
+    z = x
+    y = 10;
+  }
+}
 
 // class blockstuff{ 
 // // haven't fixed yet
@@ -124,13 +124,13 @@
 //   id(){}
 //   int myvar;
 // }
-
+// 
 // class outoforder2{
 //   int myvar;
 //   id(){}
 //   int myvar;
 // }
-
+// 
 // class outoforder3{
 //   int myvar;
 //   id(){}
@@ -140,17 +140,17 @@
 //   
 // }
 
-class messingwithdecs{
-  int myvar;
-  int myvar2; else
-  int myvar3;
-  id(){} else 
-  id2(){}
-  void func(){} else
-  int func2(){}
-  
-  
-}
+// class messingwithdecs{
+//   int myvar;
+//   int myvar2; else
+//   int myvar3;
+//   id(){} else 
+//   id2(){}
+//   void func(){} else
+//   int func2(){}
+//   
+//   
+// }
 
 // class morestuff{
 //   //missing an rparen, missing an rbrace

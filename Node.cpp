@@ -12,7 +12,7 @@ using namespace std;
 #include"Node.h"
 #include<cstdlib>
 
-bool PDebug = true; //prints leaves on true
+bool PDebug = false; //prints leaves on true
 bool EasyReading = false; /* on true, adds extra new lines for easy reading of 
                             output*/
                             
@@ -107,73 +107,123 @@ void ClassBody::print(ostream* out)
     }
     case CLASSBODYVAR:
     {
+//       if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+//       else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<VarDecRecursive>";
+//       else *out << "<" << _subNodes[0]->getType() << ">";
+//       break;
       if(_subNodes[0]->getErr()) *out << "<ErrNode>";
-      else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<VarDecRecursive>";
+      else if(_subNodes[0]->getType()== "RNode") *out << "<VarDecs>";
       else *out << "<" << _subNodes[0]->getType() << ">";
       break;
     }
     case CLASSBODYVARCON:
     {
+//       if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
+//       else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<VarDecRecursive> ";
+//       else *out << "<" << _subNodes[0]->getType() << "> ";
+//       
+//       if(_subNodes[1]->getErr()) *out << "<ErrNode>";
+//       else if(_subNodes[1]->getType()== "RecursiveNode") *out << "<ConstructorDecRecursive>";
+//       else *out << "<" << _subNodes[1]->getType() << ">";
       if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
-      else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<VarDecRecursive> ";
+      else if(_subNodes[0]->getType()== "RNode") *out << "<VarDecs> ";
       else *out << "<" << _subNodes[0]->getType() << "> ";
       
       if(_subNodes[1]->getErr()) *out << "<ErrNode>";
-      else if(_subNodes[1]->getType()== "RecursiveNode") *out << "<ConstructorDecRecursive>";
+      else if(_subNodes[1]->getType()== "RNode") *out << "<ConstructorDecs>";
       else *out << "<" << _subNodes[1]->getType() << ">";
-      
       break;
     }
     case CLASSBODYVARCONMET:
     {
+//       if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
+//       else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<VarDecRecursive> ";
+//       else *out << "<" << _subNodes[0]->getType() << "> ";
+//       
+//       if(_subNodes[1]->getErr()) *out << "<ErrNode> ";
+//       else if(_subNodes[1]->getType()== "RecursiveNode") *out << "<ConstructorDecRecursive> ";
+//       else *out << "<" << _subNodes[1]->getType() << "> ";
+//       
+//       if(_subNodes[2]->getErr()) *out << "<ErrNode>";
+//       else if(_subNodes[2]->getType()== "RecursiveNode") *out << "<MethodDecRecursive>";
+//       else *out << "<" << _subNodes[2]->getType() << ">";
+//       
+//       break;
+      
       if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
-      else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<VarDecRecursive> ";
+      else if(_subNodes[0]->getType()== "RNode") *out << "<VarDecs> ";
       else *out << "<" << _subNodes[0]->getType() << "> ";
       
       if(_subNodes[1]->getErr()) *out << "<ErrNode> ";
-      else if(_subNodes[1]->getType()== "RecursiveNode") *out << "<ConstructorDecRecursive> ";
+      else if(_subNodes[1]->getType()== "RNode") *out << "<ConstructorDecs> ";
       else *out << "<" << _subNodes[1]->getType() << "> ";
       
       if(_subNodes[2]->getErr()) *out << "<ErrNode>";
-      else if(_subNodes[2]->getType()== "RecursiveNode") *out << "<MethodDecRecursive>";
+      else if(_subNodes[2]->getType()== "RNode") *out << "<MethodDecs>";
       else *out << "<" << _subNodes[2]->getType() << ">";
       
       break;
     }
     case CLASSBODYCONMET:
     {
+//       if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
+//       else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<ConstructorDecRecursive> ";
+//       else *out << "<" << _subNodes[0]->getType() << "> ";
+//       
+//       if(_subNodes[1]->getErr()) *out << "<ErrNode>";
+//       else if(_subNodes[1]->getType()== "RecursiveNode") *out << "<MethodDecRecursive>";
+//       else *out << "<" << _subNodes[1]->getType() << ">";
+//       
+//       break;
       if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
-      else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<ConstructorDecRecursive> ";
+      else if(_subNodes[0]->getType()== "RNode") *out << "<ConstructorDecs> ";
       else *out << "<" << _subNodes[0]->getType() << "> ";
       
       if(_subNodes[1]->getErr()) *out << "<ErrNode>";
-      else if(_subNodes[1]->getType()== "RecursiveNode") *out << "<MethodDecRecursive>";
+      else if(_subNodes[1]->getType()== "RNode") *out << "<MethodDecs>";
       else *out << "<" << _subNodes[1]->getType() << ">";
       
       break;
     }
     case CLASSBODYMET:
     {
+//       if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+//       else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<MethodDecRecursive>";
+//       else *out << "<" << _subNodes[0]->getType() << ">";
+//       break;
       if(_subNodes[0]->getErr()) *out << "<ErrNode>";
-      else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<MethodDecRecursive>";
+      else if(_subNodes[0]->getType()== "RNode") *out << "<MethodDecs>";
       else *out << "<" << _subNodes[0]->getType() << ">";
       break;
     }
     case CLASSBODYCON:
     {
+//       if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+//       else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<ConstructorDecRecursive>";
+//       else *out << "<" << _subNodes[0]->getType() << ">";
+//       break;
       if(_subNodes[0]->getErr()) *out << "<ErrNode>";
-      else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<ConstructorDecRecursive>";
+      else if(_subNodes[0]->getType()== "RNode") *out << "<ConstructorDecs>";
       else *out << "<" << _subNodes[0]->getType() << ">";
       break;
     }
     case CLASSBODYVARMET:
     {
+//       if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
+//       else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<VarDecRecursive>";
+//       else *out << "<" << _subNodes[0]->getType() << "> ";
+//       
+//       if(_subNodes[1]->getErr()) *out << "<ErrNode>";
+//       else if(_subNodes[1]->getType()== "RecursiveNode") *out << "<MethodDecRecursive>";
+//       else *out << "<" << _subNodes[1]->getType() << ">";
+//       
+//       break;
       if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
-      else if(_subNodes[0]->getType()== "RecursiveNode") *out << "<VarDecRecursive>";
+      else if(_subNodes[0]->getType()== "RNode") *out << "<VarDecs>";
       else *out << "<" << _subNodes[0]->getType() << "> ";
       
       if(_subNodes[1]->getErr()) *out << "<ErrNode>";
-      else if(_subNodes[1]->getType()== "RecursiveNode") *out << "<MethodDecRecursive>";
+      else if(_subNodes[1]->getType()== "RNode") *out << "<MethodDecs>";
       else *out << "<" << _subNodes[1]->getType() << ">";
       
       break;
@@ -320,42 +370,75 @@ void Block::print(ostream* out)
   {
     case BLOCKVARDEC:
     {
+//       if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+//       else if(_subNodes[0]->getType()== "RecursiveNode") 
+//         *out << "<VarDecRecursive>";
+//       else *out << " <" << _subNodes[0]->getType() << ">";
+//       break;
       if(_subNodes[0]->getErr()) *out << "<ErrNode>";
-      else if(_subNodes[0]->getType()== "RecursiveNode") 
-        *out << "<VarDecRecursive>";
+      else if(_subNodes[0]->getType()== "RNode") 
+        *out << "<VarDecs>";
       else *out << " <" << _subNodes[0]->getType() << ">";
       break;
     }
     case BLOCKSTMNT:
     {
+//       if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+//       else if(_subNodes[0]->getType()== "RecursiveNode") 
+//         *out << "<StatementRecursive>";
+//       else 
+//       {
+//         if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+//         else *out << "<" <<  _subNodes[0]->getType() << ">";
+//       }
+//       break;
       if(_subNodes[0]->getErr()) *out << "<ErrNode>";
-      else if(_subNodes[0]->getType()== "RecursiveNode") 
-        *out << "<StatementRecursive>";
+      else if(_subNodes[0]->getType()== "RNode") 
+        *out << "<Statements>";
       else 
       {
-        if(_subNodes[0]->getErr()) *out << "<ErrNode>";
-        else *out << "<" <<  _subNodes[0]->getType() << ">";
+//         if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+        *out << "<" <<  _subNodes[0]->getType() << ">";
       }
       break;
     }
     case BLOCKVARSTMNT:
     {
+//       if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
+//       else if(_subNodes[0]->getType()== "RecursiveNode") 
+//         *out << "<VarDecRecursive>";
+//       else 
+//       {
+//         if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+//         else *out << "<" <<  _subNodes[0]->getType() << "> ";
+//       }
+//       
+//       if(_subNodes[1]->getErr()) *out << "<ErrNode>";
+//       else if(_subNodes[1]->getType()== "RecursiveNode") 
+//         *out << "<StatementRecursive>";
+//       else 
+//       {
+//         if(_subNodes[1]->getErr()) *out << "<ErrNode>";
+//         else *out << "<" <<  _subNodes[1]->getType() << ">";
+//       }
+//       
+//       break;
       if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
-      else if(_subNodes[0]->getType()== "RecursiveNode") 
-        *out << "<VarDecRecursive>";
+      else if(_subNodes[0]->getType()== "RNode") 
+        *out << "<VarDecs>";
       else 
       {
-        if(_subNodes[0]->getErr()) *out << "<ErrNode>";
-        else *out << "<" <<  _subNodes[0]->getType() << "> ";
+//         if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+        *out << "<" <<  _subNodes[0]->getType() << "> ";
       }
       
       if(_subNodes[1]->getErr()) *out << "<ErrNode>";
-      else if(_subNodes[1]->getType()== "RecursiveNode") 
-        *out << "<StatementRecursive>";
+      else if(_subNodes[1]->getType()== "RNode") 
+        *out << "<Statements>";
       else 
       {
-        if(_subNodes[1]->getErr()) *out << "<ErrNode>";
-        else *out << "<" <<  _subNodes[1]->getType() << ">";
+//         if(_subNodes[1]->getErr()) *out << "<ErrNode>";
+        *out << "<" <<  _subNodes[1]->getType() << ">";
       }
       
       break;
@@ -474,6 +557,53 @@ void RecursiveNode::print(ostream* out)
   }
   
   *out << endl;
+  for(unsigned int i = 0; i < _subNodes.size(); i++)
+  {
+    _subNodes[i]->print(out);
+  }
+  if(EasyReading) *out << endl;
+  
+}
+/******************************************************************************/
+
+RNode::RNode(int kind) : Node("", "RNode", kind) {}
+
+void RNode::add(Node* child)
+{
+  _subNodes.push_back(child);
+}
+
+void RNode::print(ostream* out)
+{
+  switch(_kind)
+  {
+    case RECVARDEC:
+    {
+      *out << "<VarDecs> --> " << _subNodes.size() << " <VarDec>" << endl;
+      break;
+    }
+    case RECSTMNT:
+    {
+      *out << "<Statements> --> " << _subNodes.size() << " <Statement>" << endl;
+      break;
+    }
+    case RECCONDEC:
+    {
+      *out << "<ConstructorDecs> --> " << _subNodes.size() << " <ConstructorDec>" << endl;
+      break;
+    }
+    case RECMETDEC:
+    {
+      *out << "<MethodDecs> --> " << _subNodes.size() << " <MethodDec>" << endl;
+      break;
+    }
+    default:
+    {
+      cerr << "Fatal Error RNode!" << endl;
+      exit(1);
+    }
+  }
+  
   for(unsigned int i = 0; i < _subNodes.size(); i++)
   {
     _subNodes[i]->print(out);
@@ -670,22 +800,22 @@ void Expression::print(ostream* out)
     }
     case EXPUNARY:
     {
-      *out <<  (PDebug ? "<UnaryOp>" : "UNARYOP") << " <Expression>";
+      *out << "<UnaryOp> <Expression>";
       break;
     }
     case EXPRELATION:
     {
-      *out << "<Expression> " << (PDebug ? "<RelationOp>" : "RELATIONOP") << " <Expression>";
+      *out << "<Expression> <RelationOp> <Expression>";
       break;
     }
     case EXPPRODUCT:
     {
-      *out << "<Expression> " << (PDebug ? "<ProductOp>" : "PRODUCTOP") << " <Expression>";
+      *out << "<Expression> <ProductOp> <Expression>";
       break;
     }
     case EXPSUMOP:
     {
-      *out << "<Expression> " << (PDebug ? "<SumOp>" : "SUMOP") << " <Expression>";
+      *out << "<Expression> <SumOp> <Expression>";
       break;
     }
     case EXPPAREN:
@@ -713,33 +843,12 @@ void Expression::print(ostream* out)
       exit(1);
   }
   *out << endl;
-  if(PDebug) //just print all the children out
-  {
-    for(unsigned int i = 0; i < _subNodes.size(); i++)
-    {
-      _subNodes[i]->print(out);
-    }
-  }
-  else //dont print the op children
-  {
-    if(_kind == EXPUNARY)
-    {
-      _subNodes[1]->print(out);
-    }
-    else if((_kind == EXPRELATION) || (_kind == EXPPRODUCT) || (_kind == EXPSUMOP))
-    {
-      _subNodes[0]->print(out);
-      _subNodes[2]->print(out);
-    }
-    else
-    {
-      for(unsigned int i = 0; i < _subNodes.size(); i++)
-      {
-        _subNodes[i]->print(out);
-      }
-    }
-  }
   
+  for(unsigned int i = 0; i < _subNodes.size(); i++)
+  {
+    _subNodes[i]->print(out);
+  }
+
   if(EasyReading) *out << endl;
 }
 
@@ -951,7 +1060,7 @@ void NewExpression::print(ostream* out)
   if(_err) return;
   
   if(_value == "int") *out << "<NewExpression> --> new int ";
-  *out << "<NewExpression> --> new " << (PDebug ? _value : "ID") << " ";
+  else *out << "<NewExpression> --> new " << (PDebug ? _value : "ID") << " ";
   
   switch(_kind)
   {
@@ -1281,6 +1390,4 @@ ErrNode::ErrNode():Node("", "ErrNode")
 void ErrNode::print(ostream* out)
 {
   return;
-  cerr << "Tried to print an ErrNdoe!" << endl;
-  exit(1);
 }

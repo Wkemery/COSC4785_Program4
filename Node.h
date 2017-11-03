@@ -141,6 +141,14 @@ public:
   void print(ostream* out);
 };
 
+class RNode : public Node
+{
+public:
+  RNode(int kind);
+  void add(Node* child);
+  void print(ostream* out);
+};
+
 class RecursiveNode: public Node
 {
 public:
