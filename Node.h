@@ -179,12 +179,12 @@ class BrackExpression : public Node
 {
 private:
   bool _array;
-  void recAdd(stack<Node*> & expressions);
-  void recReverse(stack<Node*> & expressions);
+//   void recAdd(stack<Node*> & expressions);
+//   void recReverse(stack<Node*> & expressions);
 public:
   BrackExpression(Node* expression1, Node* expression2);
   BrackExpression(Node* node1);
-  void reverse();
+//   void reverse();
   void print(ostream* out);
 };
 

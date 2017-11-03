@@ -12,6 +12,12 @@ using namespace std;
 #include"Node.h"
 #include<cstdlib>
 
+bool PDebug = true; //prints leaves on true
+bool EasyReading = false; /* on true, adds extra new lines for easy reading of 
+                            output*/
+                            
+/******************************************************************************/
+                            
 Node::Node(string value = "", string type = "", int kind = 0)
 :_value(value), _type(type), _kind(kind), _err(false)
 {}
@@ -42,15 +48,15 @@ void ClassDec::print(ostream* out)
 {
   if(_err) return;
   
-  *out << "<ClassDec> --> class ID <ClassBody>" << endl;
+  *out << "<ClassDec> --> class " << (PDebug ? _value : "ID") << " <ClassBody>" << endl;
   
-  *out << endl;
+  if(EasyReading) *out << endl;
   for(unsigned int i = 0; i < _subNodes.size(); i++)
   {
     _subNodes[i]->print(out);
   }
   
-  *out << endl;
+  if(EasyReading) *out << endl;
 }
 
 /******************************************************************************/
@@ -282,7 +288,7 @@ void Statement::print(ostream* out)
       _subNodes[i]->print(out);
     }
     
-    *out << endl << endl;
+    if(EasyReading) *out << endl << endl;
     
 }
 /******************************************************************************/
@@ -373,7 +379,8 @@ void Block::print(ostream* out)
 }
 /******************************************************************************/
 /*Don't want to discount entire RecursiveNode tree just because one node is bad, 
- * but We do want an entire Recursive node to be bad if both of its children are mitakes*/
+ * but We do want an entire Recursive node to be bad if both of its children are 
+ * mistakes*/
 RecursiveNode::RecursiveNode(Node* node1, Node* node2, int kind)
 :Node("", "RecursiveNode", kind)
 {
@@ -411,7 +418,7 @@ void RecursiveNode::print(ostream* out)
           *out << "<StatementRecursive> ";
         else 
         {
-          if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+          if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
           else *out << "<" <<  _subNodes[0]->getType() << "> ";
         }
         
@@ -430,7 +437,7 @@ void RecursiveNode::print(ostream* out)
           *out << "<ConstructorDecRecursive> ";
         else 
         {
-          if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+          if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
           else *out << "<" <<  _subNodes[0]->getType() << "> ";
         }
         
@@ -449,7 +456,7 @@ void RecursiveNode::print(ostream* out)
           *out << "<MethodDecRecursive> ";
         else 
         {
-          if(_subNodes[0]->getErr()) *out << "<ErrNode>";
+          if(_subNodes[0]->getErr()) *out << "<ErrNode> ";
           else *out << "<" <<  _subNodes[0]->getType() << "> ";
         }
         
@@ -471,7 +478,7 @@ void RecursiveNode::print(ostream* out)
   {
     _subNodes[i]->print(out);
   }
-  *out << endl;
+  if(EasyReading) *out << endl;
   
 }
 /******************************************************************************/
@@ -563,12 +570,12 @@ void Name::print(ostream* out)
     }
     case NAMEID:
     {
-      *out << _value;
+      *out << (PDebug ? _value : "ID");
       break;
     }
     case NAMEDOTID:
     {
-      *out << "<Name>." << _value;
+      *out << "<Name>." << (PDebug ? _value : "ID");
       break;
     }
     case NAMEEXP:
@@ -578,7 +585,7 @@ void Name::print(ostream* out)
     }
     case NAMEIDEXP:
     {
-      *out << _value << " [<Expression>]";
+      *out << (PDebug ? _value : "ID") << " [<Expression>]";
       break;
     }
     default:
@@ -648,7 +655,7 @@ void Expression::print(ostream* out)
   {
     case EXPNUM:
     {
-      *out << _value;
+      *out << (PDebug ? _value : "NUM");
       break;
     }
     case EXPNULL:
@@ -663,22 +670,22 @@ void Expression::print(ostream* out)
     }
     case EXPUNARY:
     {
-      *out << "<UnaryOp> <Expression>";
+      *out <<  (PDebug ? "<UnaryOp>" : "UNARYOP") << " <Expression>";
       break;
     }
     case EXPRELATION:
     {
-      *out << "<Expression> <RelationOp> <Expression>";
+      *out << "<Expression> " << (PDebug ? "<RelationOp>" : "RELATIONOP") << " <Expression>";
       break;
     }
     case EXPPRODUCT:
     {
-      *out << "<Expression> <ProductOp> <Expression>";
+      *out << "<Expression> " << (PDebug ? "<ProductOp>" : "PRODUCTOP") << " <Expression>";
       break;
     }
     case EXPSUMOP:
     {
-      *out << "<Expression> <SumOp> <Expression>";
+      *out << "<Expression> " << (PDebug ? "<SumOp>" : "SUMOP") << " <Expression>";
       break;
     }
     case EXPPAREN:
@@ -706,12 +713,34 @@ void Expression::print(ostream* out)
       exit(1);
   }
   *out << endl;
-  for(unsigned int i = 0; i < _subNodes.size(); i++)
+  if(PDebug) //just print all the children out
   {
-    _subNodes[i]->print(out);
+    for(unsigned int i = 0; i < _subNodes.size(); i++)
+    {
+      _subNodes[i]->print(out);
+    }
+  }
+  else //dont print the op children
+  {
+    if(_kind == EXPUNARY)
+    {
+      _subNodes[1]->print(out);
+    }
+    else if((_kind == EXPRELATION) || (_kind == EXPPRODUCT) || (_kind == EXPSUMOP))
+    {
+      _subNodes[0]->print(out);
+      _subNodes[2]->print(out);
+    }
+    else
+    {
+      for(unsigned int i = 0; i < _subNodes.size(); i++)
+      {
+        _subNodes[i]->print(out);
+      }
+    }
   }
   
-  *out << endl;
+  if(EasyReading) *out << endl;
 }
 
 /******************************************************************************/
@@ -732,30 +761,30 @@ BrackExpression::BrackExpression(Node* expression1, Node* expression2)
   if(expression2->getErr()) _err = true;
   
 }
-void BrackExpression::reverse()
-{
-  stack<Node*> expressions;
-  if(_subNodes.size() > 0) expressions.push(_subNodes[0]);
-  if(_subNodes.size() > 1) ((BrackExpression*)_subNodes[1])->recReverse(expressions);
-  if(_subNodes.size() > 0) 
-  {
-    _subNodes[0] = expressions.top();
-    expressions.pop();
-  }
-  if(_subNodes.size() > 1) ((BrackExpression*)_subNodes[1])->recAdd(expressions);
-}
-
-void BrackExpression::recReverse(stack<Node*> & expressions)
-{
-  expressions.push(_subNodes[0]);
-  if(_subNodes.size() > 1) ((BrackExpression*)_subNodes[1])->recReverse(expressions);
-}
-void BrackExpression::recAdd(stack<Node*> & expressions)
-{
-  _subNodes[0] = expressions.top();
-  expressions.pop();
-  if(_subNodes.size() > 1) ((BrackExpression*)_subNodes[1])->recAdd(expressions);
-}
+// void BrackExpression::reverse()
+// {
+//   stack<Node*> expressions;
+//   if(_subNodes.size() > 0) expressions.push(_subNodes[0]);
+//   if(_subNodes.size() > 1) ((BrackExpression*)_subNodes[1])->recReverse(expressions);
+//   if(_subNodes.size() > 0) 
+//   {
+//     _subNodes[0] = expressions.top();
+//     expressions.pop();
+//   }
+//   if(_subNodes.size() > 1) ((BrackExpression*)_subNodes[1])->recAdd(expressions);
+// }
+// 
+// void BrackExpression::recReverse(stack<Node*> & expressions)
+// {
+//   expressions.push(_subNodes[0]);
+//   if(_subNodes.size() > 1) ((BrackExpression*)_subNodes[1])->recReverse(expressions);
+// }
+// void BrackExpression::recAdd(stack<Node*> & expressions)
+// {
+//   _subNodes[0] = expressions.top();
+//   expressions.pop();
+//   if(_subNodes.size() > 1) ((BrackExpression*)_subNodes[1])->recAdd(expressions);
+// }
 void BrackExpression::print(ostream* out)
 {
   if(_err) return;
@@ -868,7 +897,7 @@ void Param::print(ostream* out)
 {
   if(_err) return;
   
-  *out << "<Param> --> " << " <Type> " << _value;
+  *out << "<Param> --> " << " <Type> " << (PDebug ? _value : "ID");
   
   *out << endl;
   for(unsigned int i = 0; i < _subNodes.size(); i++)
@@ -921,7 +950,8 @@ void NewExpression::print(ostream* out)
 {
   if(_err) return;
   
-  *out << "<NewExpression> --> new " << _value << " ";
+  if(_value == "int") *out << "<NewExpression> --> new int ";
+  *out << "<NewExpression> --> new " << (PDebug ? _value : "ID") << " ";
   
   switch(_kind)
   {
@@ -994,7 +1024,7 @@ void ConstructorDec::print(ostream* out)
 {
   if(_err) return;
   
-  *out << "<ConstructorDec> --> " << _value;
+  *out << "<ConstructorDec> --> " << (PDebug ? _value : "ID");
   
   switch(_kind)
   {
@@ -1023,7 +1053,7 @@ void ConstructorDec::print(ostream* out)
     _subNodes[i]->print(out);
     
   }
-  *out << endl;
+  if(EasyReading) *out << endl;
 }
 
 /******************************************************************************/
@@ -1079,22 +1109,22 @@ void MethodDec::print(ostream* out)
   {
     case METHODDECVOID:
     {
-      *out << "void " << _value << " (<ParameterList>) "; 
+      *out << "void " << (PDebug ? _value : "ID") << " (<ParameterList>) "; 
       break;
     }
     case METHODDECTYPE:
     {
-      *out << "<Type> " << _value << " (<ParameterList>) ";
+      *out << "<Type> " << (PDebug ? _value : "ID") << " (<ParameterList>) ";
       break;
     }
     case METHODDECTYPEEMPTY:
     {
-      *out << "<Type> " << _value << " () ";
+      *out << "<Type> " << (PDebug ? _value : "ID") << " () ";
       break;
     }
     case METHODDECVOIDEMPTY:
     {
-      *out << "void " << _value << " () ";
+      *out << "void " << (PDebug ? _value : "ID") << " () ";
       break;
     }
     default:
@@ -1104,13 +1134,13 @@ void MethodDec::print(ostream* out)
     }
   }
   if(_subNodes.size() > 0) 
-    *out << " <" << _subNodes[_subNodes.size() - 1]->getType() << ">" << endl;
+    *out << "<" << _subNodes[_subNodes.size() - 1]->getType() << ">" << endl;
   for(unsigned int i = 0; i < _subNodes.size(); i++)
   {
     _subNodes[i]->print(out);
     
   }
-  *out << endl;
+  if(EasyReading) *out << endl;
 }
 
 /******************************************************************************/
@@ -1125,7 +1155,7 @@ void VarDec::print(ostream* out)
 {
   if(_err) return;
   
-  *out << "<VarDec> --> <Type> " << _value << " ;" << endl;
+  *out << "<VarDec> --> <Type> " << (PDebug ? _value : "ID") << " ;" << endl;
   for(unsigned int i = 0; i < _subNodes.size(); i++)
   {
     _subNodes[i]->print(out);
@@ -1153,12 +1183,12 @@ void Type::print(ostream* out)
   {
     case TYPE:
     {
-      *out << _value;
+      *out << (PDebug ? _value : "ID");
       break;
     }
     case TYPEBRACKS:
     {
-      *out << _value << " <RecursiveBrackets>"; 
+      *out << (PDebug ? _value : "ID") << " <RecursiveBrackets>"; 
       break;
     }
     default:

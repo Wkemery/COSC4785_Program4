@@ -98,7 +98,7 @@ input:  %empty
             else delete $2;
         }
         | error{
-          cerr << "Got no idea Around " << yylval.token->line << ":" 
+          cerr << ": Unknown Around " << yylval.token->line << ":" 
           << yylval.token->column <<endl << endl; 
           yyclearin;
           yyerrok;
@@ -139,6 +139,7 @@ classbody:  LBRACE RBRACE {
                   $$ = new ErrNode();
                   cerr << "Missing right brace around " << yylval.token->line
                   << ":" << yylval.token->column << endl << endl;
+                  yyerrok;
                   delete $1; delete $2;
             }
             | LBRACE methoddecr RBRACE{
@@ -155,17 +156,41 @@ vardecr: vardec { $$ = $1; }
           | vardecr vardec {
                 $$ = new RecursiveNode($1, $2, RECVARDEC);  
                 }
+          | vardecr error {
+                  $$ = new ErrNode();  
+                  cerr << ": Unexpected token after variable declaration around " << yylval.token->line
+                  << ":" << yylval.token->column << endl << endl;
+                  yyclearin;
+                  yyerrok;
+                  delete $1;
+                }
 ;
 
 constructordecr: constructordec { $$ = $1; }
                   | constructordecr constructordec {
                         $$ = new RecursiveNode($1, $2, RECCONDEC);  
                         }
+                  | constructordecr error {
+                        $$ = new ErrNode();  
+                        cerr << ": Unexpected token after constructor declaration around " << yylval.token->line
+                        << ":" << yylval.token->column << endl << endl;
+                        yyclearin;
+                        yyerrok;
+                        delete $1;
+                        }
 ;
 
 methoddecr: methoddec { $$ = $1; }
             | methoddecr methoddec {
                   $$ = new RecursiveNode($1, $2, RECMETDEC);  
+                  }
+            | methoddecr error {
+                  $$ = new ErrNode();  
+                  cerr << ": Unexpected token after method declaration around " << yylval.token->line
+                  << ":" << yylval.token->column << endl << endl;
+                  yyclearin;
+                  yyerrok;
+                  delete $1;
                   }
 ;
 
@@ -240,13 +265,13 @@ block:  LBRACE RBRACE{
               $$ = new Block($2, BLOCKSTMNT);
               delete $1; delete $3;
               }
-        | LBRACE vardecr error {
+/*        | LBRACE vardecr error {
             $$ = new ErrNode();
             cerr << "Expected right bracket at " << yylval.token->line
             << ":" << yylval.token->column << endl << endl;
             yyerrok;
             delete $1; delete $2;
-        }
+        }*/
         | LBRACE error {
             $$ = new ErrNode();
             cerr << "Expected right bracket at " << $1->line
@@ -287,6 +312,14 @@ statementr: statement { $$ = $1; }
 conditionalstatement: IF LPAREN expression RPAREN statement %prec IFEL{
                             $$ = new CondStatement($3, $5, CONDSTMNT);
                             delete $1; delete $2; delete $4;
+                            }
+                      | IF LPAREN expression error statement %prec IFEL{
+                            $$ = new ErrNode();
+                            cerr << "Expected right parenthesis after"
+                            << " expression around " << $2->line << ":" 
+                            << $2->column << endl << endl;
+                            yyerrok;
+                            delete $1; delete $2; delete $3; delete $5;
                             }
                       | IF LPAREN expression RPAREN statement ELSE statement {
                             $$ = new CondStatement($3, $5, $7, CONDSTMNTELSE);

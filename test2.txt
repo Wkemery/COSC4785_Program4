@@ -111,10 +111,82 @@
 //   }
 // }
 
-class blockstuff{
-  id(){
-    int vardec;
-    x = y;
-    
-  id(){}
+// class blockstuff{ 
+// // haven't fixed yet
+//   id(){
+//     int vardec;
+//     x = y;
+//     
+//   id(){}
+// }
+
+// class OutofOrder1{
+//   id(){}
+//   int myvar;
+// }
+
+// class outoforder2{
+//   int myvar;
+//   id(){}
+//   int myvar;
+// }
+
+// class outoforder3{
+//   int myvar;
+//   id(){}
+//   int id(){}
+//   id(){}
+//   id(){}
+//   
+// }
+
+class messingwithdecs{
+  int myvar;
+  int myvar2; else
+  int myvar3;
+  id(){} else 
+  id2(){}
+  void func(){} else
+  int func2(){}
+  
+  
 }
+
+// class morestuff{
+//   //missing an rparen, missing an rbrace
+//   id(){
+//     if(2==2 x = 4;
+//   }
+//   
+//   id(){
+//     if(x==2)
+//     {
+//       y = 5;
+//     }
+//     else
+//     {
+//       y = 6;
+//     }
+//   
+// }
+
+// class morestuff{
+//   //missing an rparen, missing an lbrace
+//   id()
+//     if(2==2 x = 4;
+//   }
+//   
+//   id(){
+//     if(x==2)
+//     {
+//       y = 5;
+//     }
+//     else
+//     {
+//       y = 6;
+//     }
+//   }
+// }
+
+
+

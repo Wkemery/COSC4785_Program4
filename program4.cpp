@@ -30,7 +30,6 @@ int main()
   for(unsigned int i = 0; i < forest.size(); i++)
   {
     if(forest[i] != 0) forest[i]->print(&cout);
-    cout << endl;
     delete forest[i];
   }
   
