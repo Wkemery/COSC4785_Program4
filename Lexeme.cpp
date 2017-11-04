@@ -1,9 +1,9 @@
 /*
  * Lexeme.cpp
  * Author: Wyatt Emery
- * Date: SEP 27, 2017
+ * Date: OCT 20, 2017
  *
- * COSC 4785, Homework3
+ * COSC 4785, Homework4
  *
  */
 

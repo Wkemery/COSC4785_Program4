@@ -1,30 +1,44 @@
 # COSC4785_Program3
 Valid input:
-  Currently the only standalone input that my program will accept is an
-  expression or a variable declaration. All other parts of the grammar must be 
-  a smaller part of one of those.
-  
-  A note: I did implement arglist before instructed not to and i chose to take 
-  it out. However, since it can be empty, it should create no problems with your
-  testing.
+  The Decaf grammar as it is described in the document
   
 Changes in the Grammar:
   The biggest change I made was in how a variable is declared.
-  First off, I made a production called multibracks. it is used in the var
-  declaration rules. When we have the full grammar, I plan to change it to be 
-  more consistent with the actual grammar.
+  First off, I made a production called multibracks. I completely eliminated 
+  simpletype. 
   
 How I print things out:
-  Everything should be printing as described in the instructions except for
-  some expressions.  For example given 2+2. my program will print out
+  Everything should be printing as described in the instructions except for the 
+  way I print expressions.  For example given an expression of the form 2+2, my 
+  program will print out:
   <Expression> --> <Expression> <SumOp> <Expression>
-  <Expression> --> 2
+  <Expression> --> NUM
   <SumOp> --> +
-  <Expression> --> 2
+  <Expression> --> NUM
+  
+I did talk to you about this, but it is just a reminder.
   
   I did this because sum op could be a number of things and so I made it a node
   in my tree. Mine does not print:
   <Expression> --> <Expression> + <Expression>
-  <Expression> --> 2
-  <Expression> --> 2
+  <Expression> --> NUM
+  <Expression> --> NUM
   
+Errors sometimes change the printing slightly. By this, I mean on some nodes
+for some productions, you may get something like:
+  <ClassDec> --> class ID <ClassBody>
+  <ClassBody> --> {<ErrNode>}
+
+This allows me to keep the class declaration as a valid node in the tree, for 
+type checking later. Obviously the ErrNode has no legitimate values and is 
+therefore never printed out. But, it will appear like that in the printing
+sometimes and depending on the error.
+  
+  
+When I create nodes, I give almost all of them a _kind. It is an integer value 
+with macros defined in the Node.h file. I don't necessarily need all of them. 
+However, I am using them because I have a feeling they may be helpful in the 
+future. If not, I will probably remove what I can then. Overall though, it has 
+made my printing much nicer and easier to follow, with case statements. 
+  
+One final note: I do allow an empty input because it makes sense to me.

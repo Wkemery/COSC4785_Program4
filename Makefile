@@ -1,12 +1,10 @@
 ##############################
 # Makefile
 # Author: Wyatt Emery
-# Date: SEP 27, 2017
+# Date: NOV 3, 2017
 #
-# COSC 4785, Homework 2
+# COSC 4785, Homework 4
 # 
-# this will compile and generate an executable from program2.cpp program2.lpp
-# Lexeme.cpp and the Bison file
 ##############################
 
 CXX=g++
@@ -31,10 +29,10 @@ program4_bison.c: program4.y
 
 
 tar: program4.cpp program4.lpp Lexeme.cpp Lexeme.h Makefile
-	tar -cf wemery_HW3.tar program4.cpp program4.lpp Lexeme.cpp Lexeme.h \
+	tar -cf wemery_HW4.tar program4.cpp program4.lpp Lexeme.cpp Lexeme.h \
 	program4.y Node.h Node.cpp program4_readme.txt program4.pdf Makefile
 
 clean: 
-	/bin/rm -f *.o core.* *.output program4 program4_lex.cpp wemery_HW3.tar \
+	/bin/rm -f *.o core.* *.output program4 program4_lex.cpp wemery_HW4.tar \
     program4_bison.c program4_bison.h
 

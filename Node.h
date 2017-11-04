@@ -1,7 +1,7 @@
 /*
  * Node.h
  * Author: Wyatt Emery
- * Date: OCT 6, 2017
+ * Date: NOV 3, 2017
  *
  * COSC 4785, Homework3
  *

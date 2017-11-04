@@ -2,9 +2,9 @@
   /*
    * program4.lpp
    * Author: Wyatt Emery
-   * Date: SEP 27, 2017
+   * Date: OCT 20, 2017
    *
-   * COSC 4785, Homework3
+   * COSC 4785, Homework4
    *
    */
   
@@ -13,6 +13,10 @@
    *  regex that didnt match completed multiline comments as incomplete 
    *  multiline comments. It added two extra states and a few extra rules, but
    *  I don't think it's too messy
+   */
+  
+  /* I create a new Lexeme object everytime I match a production. These are all
+   * deleted in the bison ".y" file
    */
   
   #include"Lexeme.h" 
@@ -24,7 +28,7 @@
   
 void yyerror(const char *string)
 {
-  cerr << string << " " ;//<< yylval.token->value << endl;
+  cerr << string << " " ;
   return;
 }
 %}
@@ -399,13 +403,11 @@ INVALIDNONWORD [^!=<>+\-*\/;.,{}()% \t\n\[\]&\|]
 
 . {
   //found an error char, enter error state, ignore captured input
-  //cout << "yytext:" << yytext << "end" <<endl; 
   yyless(0);
   BEGIN(ERROR); 
 }
 
 <ERROR>{INVALIDNONWORD}+ {
-  //cout << "yytext:" << yytext << endl;
   yymore();
   BEGIN(ERROR2);
 }

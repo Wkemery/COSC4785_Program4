@@ -1,8 +1,8 @@
 /*
  * program4.y
  * Author: Wyatt Emery
- * Date: OCT 6, 2017
- * COSC 4785, Homework3
+ * Date: NOV 3, 2017
+ * COSC 4785, Homework4
  */
 
 %{
@@ -32,11 +32,19 @@ void yyerror(const char *);
 
 }
 
-/* In many of the code blocks when matching productions, I have various to see 
- * if I'm building a "dirty" node tree. There are a few instances where I 
- * $$ = 0; I do this when I cannot create a full node based off of the 
- * information at hand. I've kept track of those instances and will have more 
- * checks for that in the future.
+/* I eliminated the use of %empty in this file. It generally causes too many 
+ * problems and I don't want to deal with them. Instead, I just expand the 
+ * higher level production to not include whatever could have been empty.
+ */
+
+/* vardecr, constructordecr, methoddecr, and statementr no longer build a 
+ * left recursive tree as it is defined in the grammar. Now there is a singal 
+ * RNode which encompasses all four of these grammar items. All the children
+ * are stored in a single vector. This eliminated a lot of the need for
+ * complicated error checking since statements are no longer children of
+ * statements etc... However, when printed out, if there are errors, the 
+ * number of children associated with an RNode includes error nodes which 
+ * will not be printed out. 
  */
 
 
@@ -72,23 +80,15 @@ void yyerror(const char *);
 %destructor {delete($$);} methoddec constructordec paramlist constructordecr
 %destructor {delete($$);} methoddecr
 
-/*%precedence MULTIBRACKERR
-%precedence RBRACK*/
-
 %precedence IFEL
 %precedence ELSE
 %precedence NAME
-/* %precedence SEMICO */
-/* %precedence EXP */
+
 %left DOUBEQ NOTEQ LESSEQ GREATEQ LESS GREAT RE
 %left PLUS MINUS DOUBBAR BIN
 %left TIMES DIVIDE MOD DOUBAND PRO
 %precedence NEG
 %precedence LBRACK
-/* %precedence BRACKEXP */
-/* %precedence VARD */
-/* %precedence IDENTIFIER */
-/* %precedence LPAREN */
 
 
 %% 
@@ -153,18 +153,17 @@ classbody:  LBRACE RBRACE {
 ;
 
 vardecr: vardec { 
-              //$$ = $1; 
               $$ = new RNode(RECVARDEC);
               ((RNode*)$$)->add($1);
 }
           | vardecr vardec {
-                //$$ = new RecursiveNode($1, $2, RECVARDEC);  
                 ((RNode*)$1)->add($2);
                 $$ = $1;
                 }
           | vardecr error {
                   $$ = new ErrNode();  
-                  cerr << ": Unexpected token after variable declaration around " << yylval.token->line
+                  cerr << ": Unexpected token after variable declaration around " 
+                  << yylval.token->line
                   << ":" << yylval.token->column << endl << endl;
                   yyclearin;
                   yyerrok;
@@ -175,16 +174,15 @@ vardecr: vardec {
 constructordecr: constructordec { 
                         $$ = new RNode(RECCONDEC);
                         ((RNode*)$$)->add($1);
-/*                         $$ = $1;  */
                         }
                   | constructordecr constructordec {
-/*                         $$ = new RecursiveNode($1, $2, RECCONDEC);   */
                         ((RNode*)$1)->add($2);
                         $$ = $1;
                         }
                   | constructordecr error {
                         $$ = new ErrNode();  
-                        cerr << ": Unexpected token after constructor declaration around " << yylval.token->line
+                        cerr << ": Unexpected token after constructor declaration around " 
+                        << yylval.token->line
                         << ":" << yylval.token->column << endl << endl;
                         yyclearin;
                         yyerrok;
@@ -193,18 +191,17 @@ constructordecr: constructordec {
 ;
 
 methoddecr: methoddec { 
-/*   $$ = $1;  */
                   $$ = new RNode(RECMETDEC);
                   ((RNode*)$$)->add($1);
-}
+                  }
             | methoddecr methoddec {
-/*                   $$ = new RecursiveNode($1, $2, RECMETDEC);   */
                   ((RNode*)$1)->add($2);
                   $$ = $1;
                   }
             | methoddecr error {
                   $$ = new ErrNode();  
-                  cerr << ": Unexpected token after method declaration around " << yylval.token->line
+                  cerr << ": Unexpected token after method declaration around " 
+                  << yylval.token->line
                   << ":" << yylval.token->column << endl << endl;
                   yyclearin;
                   yyerrok;
@@ -248,7 +245,8 @@ statement: name ASSIGNOP expression SEMICO {
                   }
             | name ASSIGNOP expression error {
                   $$ = new ErrNode();
-                  cerr << "Expected semicolon after expression around " << yylval.token->line
+                  cerr << "Expected semicolon after expression around " 
+                  << yylval.token->line
                   << ":" << yylval.token->column << endl << endl;
                   yyerrok;
                   delete $1; delete $2; delete $3;
@@ -258,13 +256,8 @@ statement: name ASSIGNOP expression SEMICO {
                   cerr << "Expected semicolon before " << yylval.token->line
                   << ":" << yylval.token->column << endl << endl;
                   yyerrok;
-                  delete $1; delete $2; //delete $3;
+                  delete $1; delete $2;
                 }
-/*            | error {
-                  $$ = new ErrNode();
-                  cerr << "Statement Error around " << yylval.token->line << ":" << yyval.token->column << endl << endl;
-                  yyerrok;
-                  }*/
 ;
 
 block:  LBRACE RBRACE{
@@ -283,13 +276,6 @@ block:  LBRACE RBRACE{
               $$ = new Block($2, BLOCKSTMNT);
               delete $1; delete $3;
               }
-/*        | LBRACE vardecr error {
-            $$ = new ErrNode();
-            cerr << "Expected right bracket at " << yylval.token->line
-            << ":" << yylval.token->column << endl << endl;
-            yyerrok;
-            delete $1; delete $2;
-        }*/
         | LBRACE error {
             $$ = new ErrNode();
             cerr << "Expected right bracket at " << $1->line
@@ -298,31 +284,16 @@ block:  LBRACE RBRACE{
             delete $1;
           
         }
-/*        | error {
-              $$ = new ErrNode();
-              cerr << "Block Error around " << yylval.token->line << ":" 
-              << yylval.token->column << endl << endl;
-              yyerrok;
-              }*/
-        
 ;
 
 statementr: statement { 
-/*   $$ = $1;  */
                   $$ = new RNode(RECSTMNT);
                   ((RNode*)$$)->add($1);
                   }
             | statementr statement {
-/*                     $$ = new RecursiveNode($1, $2, RECSTMNT); */
                   ((RNode*)$1)->add($2);
                   $$ = $1;
                   }
-/*            | error {
-                  $$ = new ErrNode();
-                  cerr << "Incomplete Statement around1 " << yylval.token->line << ":" 
-                  << yylval.token->column << endl << endl;
-                  yyerrok;
-                  }*/
             | statementr error {
                   $$ = new ErrNode();
                   cerr << "Incomplete Statement around " << yylval.token->line << ":" 
@@ -391,6 +362,36 @@ methoddec: type IDENTIFIER LPAREN paramlist RPAREN block {
                 $$ = new MethodDec($2->value, $5, METHODDECVOIDEMPTY);
                 delete $1; delete $2; delete $3; delete $4;
                 }
+          | type IDENTIFIER LPAREN paramlist RPAREN error {
+                $$ = new ErrNode();
+                cerr << "Expected block after " << $5->line << ":" 
+                << $5->column << endl << endl;
+                yyerrok;
+                delete $1; delete $2; delete $3; delete $4; delete $5;
+                }
+          | type IDENTIFIER LPAREN RPAREN error {
+                $$ = new ErrNode();
+                cerr << "Expected block after " << $4->line << ":" 
+                << $4->column << endl << endl;
+                yyerrok;
+                delete $1; delete $2; delete $3; delete $4;
+                }
+          | VOID IDENTIFIER LPAREN paramlist RPAREN error {
+                $$ = new ErrNode();
+                cerr << "Expected block after " << $5->line << ":" 
+                << $5->column << endl << endl;
+                yyerrok;
+                delete $1; delete $2; delete $3; delete $4; delete $5;
+                  
+                }
+          | VOID IDENTIFIER LPAREN RPAREN error {
+                $$ = new ErrNode();
+                cerr << "Expected block after " << $4->line << ":" 
+                << $4->column << endl << endl;
+                yyerrok;
+                delete $1; delete $2; delete $3; delete $4;
+                }
+                
 
 ;
 
@@ -399,10 +400,6 @@ paramlist: param { $$ = new ParamList($1); }
                   $$ = new ParamList($1, $3);
                   delete $2;
                   }
-/*            | error {
-                  $$ = new ErrNode();
-                  delete $1; 
-                  }*/
 ;
 
 param: type IDENTIFIER {
@@ -428,13 +425,6 @@ vardec: type IDENTIFIER SEMICO {
               yyerrok;
               delete $1; delete $3;
               }
-/*        | type error {
-              $$ = new ErrNode();
-              cerr << "Expected Identifier around "<< yylval.token->line 
-              << ":" << yylval.token->column << endl << endl;
-              yyerrok;
-              delete $1;
-              }*/
 ;
 expression: NUM { 
                   $$ = new Expression($1->value, EXPNUM);
@@ -534,13 +524,7 @@ expression: NUM {
                   <<endl << endl;
                   yyerrok;
                   delete $1; delete $2; delete $3;
-                  }
-/*            | error {
-                  $$ = new ErrNode();
-                  cerr << "Expression Error around " << yylval.token->line << ":" << yyval.token->column << endl << endl;
-                  yyerrok;
-                  }*/
-            
+                  }            
 ;
 name: THIS { 
             $$ = new Name("this", NAMETHIS); 
@@ -680,22 +664,6 @@ brackexpression: LBRACK expression RBRACK {
                         yyerrok;
                         delete $1; delete $2; delete $3;
                         }
-/*                  | brackexpression LBRACK error RBRACK {
-                        $$ = new ErrNode();
-                        cerr << "Expected Expression before ']' at " 
-                        << $4->line << ":" << $4->column 
-                        << endl << endl;
-                        yyerrok;
-                        delete $1; delete $2; delete $4;
-                        }*/
-/*                  | LBRACK error RBRACK {
-                        $$ = new ErrNode();
-                        cerr << "Expected Expression before ']' at " 
-                        << $3->line << ":" << $3->column 
-                        << endl << endl;
-                        yyerrok;
-                        delete $1; delete $3;
-                        }*/
 ;
 
 arglist: expression COMMA arglist { 
@@ -748,20 +716,13 @@ type: INT {
 
 multibracks: LBRACK RBRACK {$$ = new Multibracks(); delete $1; delete $2;}
               | multibracks LBRACK RBRACK {$$ = new Multibracks($1); delete $3;delete $2;}
-              | LBRACK error /*%prec MULTIBRACKERR*/{
+              | LBRACK error {
                     $$ = new ErrNode();
                     cerr << "Expected Right Bracket at " << yylval.token->line 
                     << ":" << yylval.token->column <<endl << endl;
                     yyerrok;
                     delete $1;
                     }
-/*              | error RBRACK {
-                    $$ = new ErrNode();
-                    cerr << "Expected left Bracket before " << $2->line 
-                    << ":" << $2->column <<endl << endl;
-                    yyerrok;
-                    delete $2;
-                    }*/
               | multibracks LBRACK error {
                     $$ = new ErrNode();
                     cerr << "Expected Right Bracket at " << yylval.token->line 
@@ -769,13 +730,6 @@ multibracks: LBRACK RBRACK {$$ = new Multibracks(); delete $1; delete $2;}
                     yyerrok;
                     delete $1; delete $2;
                     }
-/*              | multibracks error RBRACK {
-                    $$ = new ErrNode();
-                    cerr << "Expected left Bracket before " << $3->line 
-                    << ":" << $3->column <<endl << endl;
-                    yyerrok;
-                    delete $1; delete $3;
-                    }*/
 ;
 
 %%
