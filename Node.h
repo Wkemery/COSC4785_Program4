@@ -63,6 +63,7 @@ using namespace std;
 #define RECCONDEC 7004
 #define RECVARDEC 7005
 #define RECMETDEC 7006
+#define RECPARAM 7008
 
 #define CLASSBODYEMPTY 8001
 #define CLASSBODYVAR 8002
@@ -282,9 +283,11 @@ public:
 class Multibracks: public Node
 {
 public:
-  Multibracks(Node* simpletype);
   Multibracks();
+  void add();
   void print(ostream* out);
+private:
+  int _count;
 };
 
 class UnaryOp : public Node

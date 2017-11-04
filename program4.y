@@ -395,9 +395,13 @@ methoddec: type IDENTIFIER LPAREN paramlist RPAREN block {
 
 ;
 
-paramlist: param { $$ = new ParamList($1); }
-            | param COMMA paramlist {
-                  $$ = new ParamList($1, $3);
+paramlist: param { 
+                  $$ = new RNode(RECPARAM);
+                  ((RNode*)$$)->add($1);
+                  }                 
+            | paramlist COMMA param {
+                  ((RNode*)$1)->add($3);
+                  $$ = $1;
                   delete $2;
                   }
 ;
@@ -714,9 +718,17 @@ type: INT {
             }
 ;
 
-multibracks: LBRACK RBRACK {$$ = new Multibracks(); delete $1; delete $2;}
-              | multibracks LBRACK RBRACK {$$ = new Multibracks($1); delete $3;delete $2;}
-              | LBRACK error {
+multibracks: LBRACK RBRACK { 
+                  $$ = new Multibracks();
+                  ((Multibracks*)$$)->add();
+                  delete $1; delete $2;
+                  }                 
+            | multibracks LBRACK RBRACK {
+                  ((Multibracks*)$1)->add();
+                  $$ = $1;
+                  delete $2; delete $3;
+                  }              
+| LBRACK error {
                     $$ = new ErrNode();
                     cerr << "Expected Right Bracket at " << yylval.token->line 
                     << ":" << yylval.token->column <<endl << endl;

@@ -481,6 +481,11 @@ void ClassBody::print(ostream* out)
           *out << "<MethodDecs> --> " << _subNodes.size() << " <MethodDec>" << endl;
           break;
         }
+        case RECPARAM:
+        {
+          *out << "<ParamList> --> " << _subNodes.size() << " <Param>" << endl; 
+          break;
+        }
         default:
         {
           cerr << "Fatal Error RNode!" << endl;
@@ -1157,24 +1162,23 @@ void ClassBody::print(ostream* out)
     }
     /******************************************************************************/
     
-    Multibracks::Multibracks(Node* simpletype):Node("", "Multibracks")
-    {
-      _subNodes.push_back(simpletype);
-      if(simpletype->getErr()) _err = true;
-    }
-    
     Multibracks::Multibracks():Node("", "Multibracks")
     {}
     
+    void Multibracks::add()
+    {
+      _count++;
+    }
     void Multibracks::print(ostream* out)
     {
       if(_err) return;
       
       *out << "<RecursiveBrackets> --> ";
-      if(_subNodes.size() > 0) *out << "<RecursiveBrackets>[]";
-      else *out << " []";
-      *out << endl;
-      if(_subNodes.size() > 0) _subNodes[0]->print(out);
+      for(int i = 0; i < _count; i++)
+      {
+        *out << "[]";
+      }
+      * out << endl;
     }
     
     
