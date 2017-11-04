@@ -486,6 +486,11 @@ void ClassBody::print(ostream* out)
           *out << "<ParamList> --> " << _subNodes.size() << " <Param>" << endl; 
           break;
         }
+        case RECARG:
+        {
+          *out << "<ArgList> --> " << _subNodes.size() << " <Expression>" << endl;
+          break;
+        }
         default:
         {
           cerr << "Fatal Error RNode!" << endl;

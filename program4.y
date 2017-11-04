@@ -670,11 +670,15 @@ brackexpression: LBRACK expression RBRACK {
                         }
 ;
 
-arglist: expression COMMA arglist { 
-            $$ = new ArgList($1, $3);
-            delete $2;
-          }
-          | expression {$$ = new ArgList($1);}
+arglist: expression { 
+                  $$ = new RNode(RECARG);
+                  ((RNode*)$$)->add($1);
+                  }                 
+         | arglist COMMA expression {
+                  ((RNode*)$1)->add($3);
+                  $$ = $1;
+                  delete $2;
+                  }
 ;
 unaryop:  PLUS {$$ = new UnaryOp("+"); delete $1;}
 | MINUS {$$ = new UnaryOp("-"); delete $1;}
