@@ -645,11 +645,13 @@ newexpression: NEW IDENTIFIER LPAREN arglist RPAREN {
                   
 ;
 brackexpression: LBRACK expression RBRACK { 
-                        $$ = new BrackExpression($2);
+                        $$ = new RNode(RECBRACKEXP);
+                        ((RNode*)$$)->add($2);
                         delete $1; delete $3;
-                        }
+                        }                 
                   | brackexpression LBRACK expression RBRACK {
-                        $$ = new BrackExpression($1, $3);
+                        ((RNode*)$1)->add($3);
+                        $$ = $1;
                         delete $2; delete $4;
                         }
                   | LBRACK expression error {

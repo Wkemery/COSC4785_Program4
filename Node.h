@@ -65,6 +65,7 @@ using namespace std;
 #define RECMETDEC 7006
 #define RECPARAM 7008
 #define RECARG 7009
+#define RECBRACKEXP 7010
 
 #define CLASSBODYEMPTY 8001
 #define CLASSBODYVAR 8002

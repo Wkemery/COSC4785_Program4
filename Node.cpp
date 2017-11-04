@@ -491,6 +491,12 @@ void ClassBody::print(ostream* out)
           *out << "<ArgList> --> " << _subNodes.size() << " <Expression>" << endl;
           break;
         }
+        case RECBRACKEXP:
+        {
+          *out << "<BracketedExpression> --> " << _subNodes.size() << " <Expression>" 
+          << endl;
+          break;
+        }
         default:
         {
           cerr << "Fatal Error RNode!" << endl;
