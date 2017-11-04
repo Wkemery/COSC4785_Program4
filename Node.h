@@ -152,13 +152,6 @@ public:
   void print(ostream* out);
 };
 
-class RecursiveNode: public Node
-{
-public:
-  RecursiveNode(Node* node1, Node* node2, int kind);
-  void print(ostream* out);
-};
-
 class CondStatement : public Node 
 {
 public:
@@ -183,47 +176,6 @@ public:
   Expression(string value, int kind);
   Expression(Node* unaryop, Node* expression, int kind);
   Expression(Node* expression1, Node* op, Node* expression2, int kind);
-  void print(ostream* out);
-};
-
-class BrackExpression : public Node
-{
-private:
-  bool _array;
-//   void recAdd(stack<Node*> & expressions);
-//   void recReverse(stack<Node*> & expressions);
-public:
-  BrackExpression(Node* expression1, Node* expression2);
-  BrackExpression(Node* node1);
-//   void reverse();
-  void print(ostream* out);
-};
-
-class OptBracket : public Node
-{
-private:
-  bool _array;
-public:
-  OptBracket(Node* expression);
-  void print(ostream* out);
-};
-
-class ArgList : public Node
-{
-private: 
-  bool _empty;
-public:
-  ArgList(Node* node1);
-  ArgList(Node* expression1, Node* expression2);
-  bool getEmpty() const ;
-  void print(ostream* out);
-};
-
-class ParamList : public Node
-{
-public:
-  ParamList(Node* node1);
-  ParamList(Node* node1, Node* node2);
   void print(ostream* out);
 };
 
